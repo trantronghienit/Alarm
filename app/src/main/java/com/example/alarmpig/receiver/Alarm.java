@@ -13,9 +13,11 @@ import android.net.Uri;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.os.Vibrator;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.alarmpig.R;
+import com.example.alarmpig.model.AlarmModel;
 
 import java.util.Calendar;
 
@@ -44,14 +46,16 @@ public class Alarm extends BroadcastReceiver
         NotificationManager manager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = new Notification(R.drawable.ic_alarm_white, "Wake up alarm", System.currentTimeMillis());
         notification.flags = Notification.FLAG_INSISTENT;
-        notification.sound = Uri.parse("android.resource://com.example.alarmpig/raw/notification");
+        notification.sound = Uri.parse("android.resource://com.example.alarmpig/raw/notification.mp3");
         manager.notify(1, notification);
     }
+    public void setAlarm(Context context){
+        Log.i("test", "setAlarm: run service");
+    }
 
-    public void setAlarm(Context context)
+    public void setAlarm(Context context, AlarmModel info)
     {
         AlarmManager am =( AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        Intent i = new Intent(context, Alarm.class);
         Intent intent = new Intent(context, Alarm.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
@@ -61,8 +65,8 @@ public class Alarm extends BroadcastReceiver
         // Set the alarm to start at approximately 2:00 p.m.
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 14);
-        calendar.set(Calendar.MINUTE, 14);
+        calendar.set(Calendar.HOUR_OF_DAY, info.hour);
+        calendar.set(Calendar.MINUTE, info.minute);
 
 //        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_DAY  , pi); // Millisec * Second * Minute
         am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
