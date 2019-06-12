@@ -10,11 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.PowerManager;
-import android.os.SystemClock;
-import android.os.Vibrator;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.alarmpig.R;
 import com.example.alarmpig.model.AlarmModel;
@@ -22,12 +18,12 @@ import com.example.alarmpig.service.AlarmService;
 
 import java.util.Calendar;
 
-public class Alarm extends BroadcastReceiver {
+public class AlarmReceiver extends BroadcastReceiver {
 
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i("test", "onReceive: Alarm");
+        Log.i("test", "onReceive: AlarmReceiver");
 //        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 //        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
 //        wl.acquire(10 * 60 * 1000L /*10 minutes*/);
@@ -61,7 +57,7 @@ public class Alarm extends BroadcastReceiver {
     public void setAlarm(Context context, AlarmModel info) {
         Log.i("test", "setAlarm" );
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, Alarm.class);
+        Intent intent = new Intent(context, AlarmReceiver.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         // Set the alarm to start at approximately 2:00 p.m.
         Calendar calendar = Calendar.getInstance();
@@ -72,7 +68,7 @@ public class Alarm extends BroadcastReceiver {
         am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY, alarmIntent);
 
-        ComponentName receiver = new ComponentName(context, Alarm.class);
+        ComponentName receiver = new ComponentName(context, AlarmReceiver.class);
         PackageManager pm = context.getPackageManager();
         pm.setComponentEnabledSetting(receiver,
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
@@ -80,7 +76,7 @@ public class Alarm extends BroadcastReceiver {
     }
 
     public void cancelAlarm(Context context) {
-        Intent intent = new Intent(context, Alarm.class);
+        Intent intent = new Intent(context, AlarmReceiver.class);
         PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(sender);

@@ -4,7 +4,7 @@
     <!-- Main Activity/Fragment -->
     <string name="empty_view_text">Press the Floating Action Button to add an alarm!</string>
 
-    <!-- Edit Alarm Activity/Fragment -->
+    <!-- Edit AlarmReceiver Activity/Fragment -->
     <string name="time">Time</string>
     <string name="label">Label</string>
     <string name="days">Days</string>
@@ -20,11 +20,11 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
-    <!-- Edit Alarm Menu -->
+    <!-- Edit AlarmReceiver Menu -->
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
 
-    <!-- Alarm Landing Page Activity/Fragment -->
+    <!-- AlarmReceiver Landing Page Activity/Fragment -->
     <string name="launch_main_activity">Launch Main Activity</string>
     <string name="dismiss">Dismiss</string>
 

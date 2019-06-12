@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:process=":remote" android:name=".receiver.Alarm"/>
+        <receiver android:process=":remote" android:name=".receiver.AlarmReceiver"/>
 
         <receiver android:name=".receiver.AutoStart">
             <intent-filter>

@@ -5,18 +5,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.IBinder;
-import android.os.Vibrator;
 import android.util.Log;
 
-import com.example.alarmpig.R;
-import com.example.alarmpig.receiver.Alarm;
 import com.example.alarmpig.util.AudioUtil;
 import com.example.alarmpig.util.Constans;
-
-import java.io.IOException;
 
 public class AlarmService extends Service {
 

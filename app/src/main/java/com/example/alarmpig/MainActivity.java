@@ -1,32 +1,49 @@
 package com.example.alarmpig;
 
 import android.content.Intent;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.room.Room;
+
+import com.example.alarmpig.db.AppDatabase;
 import com.example.alarmpig.model.AlarmModel;
-import com.example.alarmpig.receiver.Alarm;
+import com.example.alarmpig.receiver.AlarmReceiver;
 import com.example.alarmpig.service.AlarmService;
 
-import java.io.IOException;
 import java.util.Calendar;
+
+import static com.example.alarmpig.util.Constans.DATABASE_NAME;
 
 public class MainActivity extends AppCompatActivity {
 
     private Button btnStart;
     private Button btnStop;
+    private AppDatabase appDatabase;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        appDatabase = Room.databaseBuilder(getApplicationContext(),
+                AppDatabase.class, DATABASE_NAME)
+                .fallbackToDestructiveMigration()
+                .build();
+
+        // insert
+//        AlarmModel alarmModel =new AlarmModel();
+//        alarmModel.hour = 4;
+//        alarmModel.minute = 0;
+//        alarmModel.second = 0;
+//        appDatabase.AlarmDAO().insertOnlySingleAlarm(alarmModel);
+
         btnStart = findViewById(R.id.btnStart);
         btnStop = findViewById(R.id.btnStop);
-        final Alarm alarm = new Alarm();
+        final AlarmReceiver alarm = new AlarmReceiver();
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
