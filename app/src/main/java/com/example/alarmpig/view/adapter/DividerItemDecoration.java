@@ -1,12 +1,13 @@
-package com.example.alarmpig.view;
+package com.example.alarmpig.view.adapter;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.alarmpig.R;
 import com.example.alarmpig.util.ViewUtils;

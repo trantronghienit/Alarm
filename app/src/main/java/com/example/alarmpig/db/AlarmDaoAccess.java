@@ -19,7 +19,10 @@ public interface AlarmDaoAccess {
     void insertMultipleAlarmModel(List<AlarmModel> alarmList);
 
     @Query("SELECT * FROM AlarmModel WHERE alarmId = :alarmId")
-    AlarmModel fetchOneAlarmModelbyAlarmId (int alarmId);
+    AlarmModel fetchOneAlarmbyAlarmId (int alarmId);
+
+    @Query("SELECT * FROM AlarmModel")
+    List<AlarmModel> getAllAlarm();
 
     @Update
     void updateAlarm (AlarmModel alarm);

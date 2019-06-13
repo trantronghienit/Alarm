@@ -4,9 +4,9 @@
     package="com.example.alarmpig">
 
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -16,7 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".view.activity.SettingAlarmActivity"/>
+        <activity android:name=".view.activity.EditAlarmActivity"></activity>
+        <activity android:name=".view.activity.AddAlarmActivity" />
+        <activity android:name=".view.activity.DashboardAlarmActivity" />
         <activity android:name=".view.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,13 +27,15 @@
             </intent-filter>
         </activity>
 
-        <receiver android:process=":remote" android:name=".receiver.AlarmReceiver"/>
-
+        <receiver
+            android:name=".receiver.AlarmReceiver"
+            android:process=":remote" />
         <receiver android:name=".receiver.AutoStart">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
         <service
             android:name=".service.AlarmService"
             android:enabled="true"

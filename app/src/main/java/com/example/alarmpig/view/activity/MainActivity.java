@@ -18,32 +18,20 @@ import java.util.Calendar;
 
 import static com.example.alarmpig.util.Constans.DATABASE_NAME;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private Button btnStart;
     private Button btnStop;
-    private AppDatabase appDatabase;
-
+    private Button btnDashboard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        appDatabase = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, DATABASE_NAME)
-                .fallbackToDestructiveMigration()
-                .build();
-
-        // insert
-//        AlarmModel alarmModel =new AlarmModel();
-//        alarmModel.hour = 4;
-//        alarmModel.minute = 0;
-//        alarmModel.second = 0;
-//        appDatabase.AlarmDAO().insertOnlySingleAlarm(alarmModel);
-
         btnStart = findViewById(R.id.btnStart);
         btnStop = findViewById(R.id.btnStop);
+        btnDashboard = findViewById(R.id.btnDashboard);
         final AlarmReceiver alarm = new AlarmReceiver();
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,6 +50,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intentToService = new Intent(MainActivity.this, AlarmService.class);
                 stopService(intentToService);
+            }
+        });
+
+        btnDashboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentToService = new Intent(MainActivity.this, DashboardAlarmActivity.class);
+                startActivity(intentToService);
             }
         });
     }
