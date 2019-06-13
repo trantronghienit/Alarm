@@ -82,6 +82,7 @@ public class AddAlarmActivity extends BaseActivity {
             alarm.setDay(AlarmModel.FRI, mFri.isChecked());
             alarm.setDay(AlarmModel.SAT, mSat.isChecked());
             alarm.setDay(AlarmModel.SUN, mSun.isChecked());
+            alarm.convertDays();
 
             appDatabase.AlarmDAO().insertOnlySingleAlarm(alarm);
             Toast.makeText(this, "thêm thành công", Toast.LENGTH_SHORT).show();

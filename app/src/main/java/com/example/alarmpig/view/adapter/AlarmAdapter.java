@@ -1,6 +1,10 @@
 package com.example.alarmpig.view.adapter;
 
 import android.content.Context;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +16,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.alarmpig.R;
 import com.example.alarmpig.model.AlarmModel;
 import com.example.alarmpig.util.AlarmUtils;
+import com.example.alarmpig.util.UtilHelper;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
@@ -43,16 +50,16 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
             mAccentColor = ContextCompat.getColor(c, R.color.accent);
         }
 
-//        if(mDays == null){
-//            mDays = c.getResources().getStringArray(R.array.days_abbreviated);
-//        }
+        if(mDays == null){
+            mDays = UtilHelper.getStringArray(R.array.days_abbreviated);
+        }
 
         final AlarmModel alarm = mAlarms.get(position);
 
         holder.time.setText(AlarmUtils.getReadableTime(alarm.time));
         holder.amPm.setText(AlarmUtils.getAmPm(alarm.time));
         holder.label.setText(alarm.label);
-//        holder.days.setText(buildSelectedDays(alarm));
+        holder.days.setText(buildSelectedDays(alarm));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +94,36 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
 
         }
     }
+    private Spannable buildSelectedDays(AlarmModel alarm) {
+
+        final int numDays = 7;
+        final HashMap<String , Boolean> days = alarm.days;
+
+        final SpannableStringBuilder builder = new SpannableStringBuilder();
+        ForegroundColorSpan span;
+
+        int startIndex, endIndex;
+        for (int i = 0; i < numDays; i++) {
+
+            startIndex = builder.length();
+
+            final String dayText = mDays[i];
+            builder.append(dayText);
+            builder.append(" ");
+
+            endIndex = startIndex + dayText.length();
+
+            boolean value = (new ArrayList<Boolean>(days.values())).get(i);
+            if(value) {
+                span = new ForegroundColorSpan(mAccentColor);
+                builder.setSpan(span, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        }
+
+        return builder;
+
+    }
+
 
     public interface OnItemClickListener {
         void onItemClick(AlarmModel model);

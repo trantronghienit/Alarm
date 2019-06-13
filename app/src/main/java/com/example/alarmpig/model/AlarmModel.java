@@ -2,15 +2,23 @@ package com.example.alarmpig.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.SparseBooleanArray;
 
-import androidx.annotation.IntDef;
+import androidx.annotation.StringDef;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.example.alarmpig.util.UtilHelper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONObject;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity()
 public class AlarmModel implements Parcelable {
@@ -21,7 +29,8 @@ public class AlarmModel implements Parcelable {
     public int minute;
     public int second;
     @Ignore
-    public SparseBooleanArray days;
+    public HashMap<String, Boolean> days;
+    public String dayString;
     public boolean active;
     public String label;
     public String message;
@@ -29,6 +38,7 @@ public class AlarmModel implements Parcelable {
 
     public AlarmModel(){
         days = buildBaseDaysArray();
+        convertDays();
     }
 
     protected AlarmModel(Parcel in) {
@@ -36,7 +46,7 @@ public class AlarmModel implements Parcelable {
         hour = in.readInt();
         minute = in.readInt();
         second = in.readInt();
-        days = in.readSparseBooleanArray();
+        dayString = in.readString();
         active = in.readByte() != 0;
         label = in.readString();
         message = in.readString();
@@ -55,6 +65,24 @@ public class AlarmModel implements Parcelable {
         }
     };
 
+    public void setDay(@Days String dayInput, boolean isAlarmed) {
+        days.put(dayInput, isAlarmed);
+    }
+
+    public boolean getDay(@Days String day) {
+        Type type = new TypeToken<Map<String, Boolean>>(){}.getType();
+        Map<String, Boolean> data = UtilHelper.getGson().fromJson(this.dayString , type);
+        if (data.isEmpty()){
+            return false;
+        }
+        return data.get(day);
+    }
+
+    public void convertDays(){
+        JSONObject json = new JSONObject(days);
+        this.dayString = json.toString();
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -66,49 +94,27 @@ public class AlarmModel implements Parcelable {
         dest.writeInt(hour);
         dest.writeInt(minute);
         dest.writeInt(second);
-        dest.writeSparseBooleanArray(days);
+        dest.writeString(dayString);
         dest.writeByte((byte) (active ? 1 : 0));
         dest.writeString(label);
         dest.writeString(message);
         dest.writeLong(time);
     }
 
-    public void setDay(@Days int dayInput, boolean isAlarmed) {
-        days.append(dayInput, isAlarmed);
-    }
-
-    public boolean getDay(@Days int day) {
-        return days.get(day);
-    }
-
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MON,TUES,WED,THURS,FRI,SAT,SUN})
+    @StringDef({MON,TUES,WED,THURS,FRI,SAT,SUN})
     @interface Days{}
-    public static final int MON = 1;
-    public static final int TUES = 2;
-    public static final int WED = 3;
-    public static final int THURS = 4;
-    public static final int FRI = 5;
-    public static final int SAT = 6;
-    public static final int SUN = 7;
+    public static final String MON = "MON";
+    public static final String TUES = "TUES";
+    public static final String WED = "WED";
+    public static final String THURS = "THURS";
+    public static final String FRI = "FRI";
+    public static final String SAT = "SAT";
+    public static final String SUN = "SUN";
 
-    private static SparseBooleanArray buildDaysArray(@Days int... days) {
+    private static HashMap<String, Boolean> buildBaseDaysArray() {
 
-        final SparseBooleanArray array = buildBaseDaysArray();
-
-        for (@Days int day : days) {
-            array.append(day, true);
-        }
-
-        return array;
-
-    }
-
-    private static SparseBooleanArray buildBaseDaysArray() {
-
-        final int numDays = 7;
-
-        final SparseBooleanArray array = new SparseBooleanArray(numDays);
+        final HashMap<String, Boolean> array = new HashMap<>();
 
         array.put(MON, false);
         array.put(TUES, false);

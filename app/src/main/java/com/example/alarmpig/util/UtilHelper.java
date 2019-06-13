@@ -7,7 +7,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.widget.TimePicker;
 
+import com.example.alarmpig.App;
+import com.google.gson.Gson;
+
 public final class UtilHelper {
+    private static Gson gson;
 
     public static <T extends Activity> void switchActivity(T context, Class clazz) {
         if (context != null) {
@@ -50,4 +54,15 @@ public final class UtilHelper {
                 : picker.getCurrentHour();
     }
 
+
+    public static Gson getGson() {
+        if (gson == null) {
+            gson = new Gson();
+        }
+        return gson;
+    }
+
+    public static String[] getStringArray(int res){
+        return App.getContext().getResources().getStringArray(res);
+    }
 }

@@ -50,16 +50,12 @@ public class AlarmReceiver extends BroadcastReceiver {
         manager.notify(1, notification);
     }
 
-    public void setAlarm(Context context) {
-        Log.i("test", "setAlarm: run service");
-    }
-
     public void setAlarm(Context context, AlarmModel info) {
         Log.i("test", "setAlarm" );
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        // Set the alarm to start at approximately 2:00 p.m.
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, info.hour);

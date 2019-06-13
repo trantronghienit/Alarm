@@ -1,8 +1,7 @@
 package com.example.alarmpig.view.activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -68,7 +67,7 @@ public class EditAlarmActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.add_alarm_menu, menu);
+        getMenuInflater().inflate(R.menu.edit_alarm_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -90,32 +89,30 @@ public class EditAlarmActivity extends BaseActivity {
         try {
             String label = mLabel.getText().toString();
             String message = mLabel.getText().toString();
-            AlarmModel alarm = new AlarmModel();
 
             final Calendar time = Calendar.getInstance();
             time.set(Calendar.MINUTE, ViewUtils.getTimePickerMinute(mTimePicker));
             time.set(Calendar.HOUR_OF_DAY, ViewUtils.getTimePickerHour(mTimePicker));
+            mAlarm.time = time.getTimeInMillis();
+            mAlarm.minute = ViewUtils.getTimePickerMinute(mTimePicker);
+            mAlarm.second = 0;
+            mAlarm.hour = ViewUtils.getTimePickerHour(mTimePicker);
+            mAlarm.label = label;
+            mAlarm.message = message;
+            mAlarm.active = true;
+            mAlarm.setDay(AlarmModel.MON, mMon.isChecked());
+            mAlarm.setDay(AlarmModel.TUES, mTues.isChecked());
+            mAlarm.setDay(AlarmModel.WED, mWed.isChecked());
+            mAlarm.setDay(AlarmModel.THURS, mThurs.isChecked());
+            mAlarm.setDay(AlarmModel.FRI, mFri.isChecked());
+            mAlarm.setDay(AlarmModel.SAT, mSat.isChecked());
+            mAlarm.setDay(AlarmModel.SUN, mSun.isChecked());
 
-            alarm.time = time.getTimeInMillis();
-            alarm.minute = ViewUtils.getTimePickerMinute(mTimePicker);
-            alarm.second = 0;
-            alarm.hour = ViewUtils.getTimePickerHour(mTimePicker);
-            alarm.label = label;
-            alarm.message = message;
-            alarm.active = true;
-            alarm.setDay(AlarmModel.MON, mMon.isChecked());
-            alarm.setDay(AlarmModel.TUES, mTues.isChecked());
-            alarm.setDay(AlarmModel.WED, mWed.isChecked());
-            alarm.setDay(AlarmModel.THURS, mThurs.isChecked());
-            alarm.setDay(AlarmModel.FRI, mFri.isChecked());
-            alarm.setDay(AlarmModel.SAT, mSat.isChecked());
-            alarm.setDay(AlarmModel.SUN, mSun.isChecked());
-
-            appDatabase.AlarmDAO().insertOnlySingleAlarm(alarm);
-            Toast.makeText(this, "thêm thành công", Toast.LENGTH_SHORT).show();
+            appDatabase.AlarmDAO().updateAlarm(mAlarm);
+            Toast.makeText(this, "sửa thành công", Toast.LENGTH_SHORT).show();
             finish();
         } catch (Exception e) {
-            Toast.makeText(this, "Thêm alarm lỗi " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "sửa alarm lỗi " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -137,7 +134,12 @@ public class EditAlarmActivity extends BaseActivity {
                 }
             }
         });
-        builder.setNegativeButton(R.string.no, null);
+        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
         builder.show();
 
     }

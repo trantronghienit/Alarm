@@ -51,15 +51,25 @@ public class DashboardAlarmActivity extends BaseActivity implements AlarmAdapter
         mAddAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UtilHelper.switchActivity(DashboardAlarmActivity.this , AddAlarmActivity.class);
+                UtilHelper.switchActivity(DashboardAlarmActivity.this, AddAlarmActivity.class);
             }
         });
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (mList != null) {
+            mList.clear();
+            mList.addAll(appDatabase.AlarmDAO().getAllAlarm());
+            alarmAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public void onItemClick(AlarmModel model) {
         Bundle bundle = new Bundle();
-        bundle.putParcelable(PARCELABLE_DATA , model);
-        UtilHelper.switchActivity(DashboardAlarmActivity.this , EditAlarmActivity.class ,bundle );
+        bundle.putParcelable(PARCELABLE_DATA, model);
+        UtilHelper.switchActivity(DashboardAlarmActivity.this, EditAlarmActivity.class, bundle);
     }
 }
