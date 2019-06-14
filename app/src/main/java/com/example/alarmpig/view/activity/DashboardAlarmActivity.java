@@ -1,7 +1,5 @@
 package com.example.alarmpig.view.activity;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -19,7 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
-import static com.example.alarmpig.util.Constans.PARCELABLE_DATA;
+import static com.example.alarmpig.util.Constants.PARCELABLE_DATA;
 
 public class DashboardAlarmActivity extends BaseActivity implements AlarmAdapter.OnItemClickListener {
 

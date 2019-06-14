@@ -2,14 +2,14 @@ package com.example.alarmpig.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
-import androidx.annotation.StringDef;
+import androidx.annotation.IntDef;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.example.alarmpig.util.UtilHelper;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;
@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Type;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class AlarmModel implements Parcelable {
     public int minute;
     public int second;
     @Ignore
-    public HashMap<String, Boolean> days;
+    public HashMap<Integer, Boolean> days;
     public String dayString;
     public boolean active;
     public String label;
@@ -65,22 +66,37 @@ public class AlarmModel implements Parcelable {
         }
     };
 
-    public void setDay(@Days String dayInput, boolean isAlarmed) {
+    public void setDay(@Days int dayInput, boolean isAlarmed) {
+        if (days == null && !TextUtils.isEmpty(dayString)){
+            Type type = new TypeToken<Map<String, Boolean>>(){}.getType();
+            days = UtilHelper.getGson().fromJson(this.dayString , type);
+        }
         days.put(dayInput, isAlarmed);
     }
 
-    public boolean getDay(@Days String day) {
-        Type type = new TypeToken<Map<String, Boolean>>(){}.getType();
-        Map<String, Boolean> data = UtilHelper.getGson().fromJson(this.dayString , type);
-        if (data.isEmpty()){
+    public boolean getDay(@Days int day) {
+        Type type = new TypeToken<HashMap<Integer, Boolean>>(){}.getType();
+        days = UtilHelper.getGson().fromJson(this.dayString , type);
+        if (days.isEmpty()){
             return false;
         }
-        return data.get(day);
+        boolean isKeyPresent = days.containsKey(day);
+        if (isKeyPresent){
+            return days.get(day);
+        }else {
+            return false;
+        }
+
     }
 
     public void convertDays(){
-        JSONObject json = new JSONObject(days);
-        this.dayString = json.toString();
+        try {
+            Type type = new TypeToken<HashMap<Integer, Boolean>>(){}.getType();
+            this.dayString = UtilHelper.getGson().toJson(days , type);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -102,19 +118,19 @@ public class AlarmModel implements Parcelable {
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({MON,TUES,WED,THURS,FRI,SAT,SUN})
+    @IntDef({MON,TUES,WED,THURS,FRI,SAT,SUN})
     @interface Days{}
-    public static final String MON = "MON";
-    public static final String TUES = "TUES";
-    public static final String WED = "WED";
-    public static final String THURS = "THURS";
-    public static final String FRI = "FRI";
-    public static final String SAT = "SAT";
-    public static final String SUN = "SUN";
+    public static final int MON = Calendar.MONDAY;
+    public static final int TUES = Calendar.TUESDAY;
+    public static final int WED = Calendar.WEDNESDAY;
+    public static final int THURS = Calendar.THURSDAY;
+    public static final int FRI = Calendar.FRIDAY;
+    public static final int SAT = Calendar.SATURDAY;
+    public static final int SUN = Calendar.SUNDAY;
 
-    private static HashMap<String, Boolean> buildBaseDaysArray() {
+    private static HashMap<Integer, Boolean> buildBaseDaysArray() {
 
-        final HashMap<String, Boolean> array = new HashMap<>();
+        final HashMap<Integer, Boolean> array = new HashMap<>();
 
         array.put(MON, false);
         array.put(TUES, false);

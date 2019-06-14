@@ -8,7 +8,7 @@ import androidx.room.Room;
 
 import com.example.alarmpig.db.AppDatabase;
 
-import static com.example.alarmpig.util.Constans.DATABASE_NAME;
+import static com.example.alarmpig.util.Constants.DATABASE_NAME;
 
 public abstract class BaseActivity extends AppCompatActivity {
 

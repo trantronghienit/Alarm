@@ -97,7 +97,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
     private Spannable buildSelectedDays(AlarmModel alarm) {
 
         final int numDays = 7;
-        final HashMap<String , Boolean> days = alarm.days;
+        final HashMap<Integer , Boolean> days = alarm.days;
 
         final SpannableStringBuilder builder = new SpannableStringBuilder();
         ForegroundColorSpan span;

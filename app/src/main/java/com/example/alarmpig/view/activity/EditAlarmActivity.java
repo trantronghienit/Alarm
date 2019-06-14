@@ -1,7 +1,6 @@
 package com.example.alarmpig.view.activity;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,7 +16,7 @@ import com.example.alarmpig.util.ViewUtils;
 
 import java.util.Calendar;
 
-import static com.example.alarmpig.util.Constans.PARCELABLE_DATA;
+import static com.example.alarmpig.util.Constants.PARCELABLE_DATA;
 
 public class EditAlarmActivity extends BaseActivity {
 
@@ -77,6 +76,7 @@ public class EditAlarmActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.action_save:
                 save();
+                break;
             case R.id.action_delete:
                 delete();
                 break;
@@ -107,7 +107,7 @@ public class EditAlarmActivity extends BaseActivity {
             mAlarm.setDay(AlarmModel.FRI, mFri.isChecked());
             mAlarm.setDay(AlarmModel.SAT, mSat.isChecked());
             mAlarm.setDay(AlarmModel.SUN, mSun.isChecked());
-
+            mAlarm.convertDays();
             appDatabase.AlarmDAO().updateAlarm(mAlarm);
             Toast.makeText(this, "sửa thành công", Toast.LENGTH_SHORT).show();
             finish();

@@ -9,7 +9,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.example.alarmpig.util.AudioUtil;
-import com.example.alarmpig.util.Constans;
+import com.example.alarmpig.util.Constants;
 
 public class AlarmService extends Service {
 
@@ -28,14 +28,14 @@ public class AlarmService extends Service {
             public void onReceive(Context context, Intent intent) {
                 long currentTime = System.currentTimeMillis();
                 boolean isValidCycle = currentTime - lastTime < 1000; // 1 giay
-                if (isValidCycle && intent.getAction() != null && intent.getAction().equals(Constans.ACTION_VOLUME_CHANGE)){
+                if (isValidCycle && intent.getAction() != null && intent.getAction().equals(Constants.ACTION_VOLUME_CHANGE)){
                     Log.i("test", "onReceive: change volume button");
 //                    AudioUtil.maxVolume(context);
                 }
                 lastTime = currentTime;
             }
         };
-        registerReceiver(vReceiver, new IntentFilter(Constans.ACTION_VOLUME_CHANGE));
+        registerReceiver(vReceiver, new IntentFilter(Constants.ACTION_VOLUME_CHANGE));
     }
 
     @Override
