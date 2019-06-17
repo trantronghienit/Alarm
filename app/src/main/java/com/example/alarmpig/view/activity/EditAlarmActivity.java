@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.alarmpig.R;
 import com.example.alarmpig.model.AlarmModel;
+import com.example.alarmpig.util.Constants;
 import com.example.alarmpig.util.ViewUtils;
 
 import java.util.Calendar;
@@ -29,7 +30,7 @@ public class EditAlarmActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_alarm);
-        if (getIntent().getExtras() != null){
+        if (getIntent().getExtras() != null) {
             mAlarm = getIntent().getExtras().getParcelable(PARCELABLE_DATA);
         }
 
@@ -55,13 +56,13 @@ public class EditAlarmActivity extends BaseActivity {
     }
 
     private void setDayCheckboxes(AlarmModel mAlarm) {
-        mMon.setChecked(mAlarm.getDay(AlarmModel.MON));
-        mTues.setChecked(mAlarm.getDay(AlarmModel.TUES));
-        mWed.setChecked(mAlarm.getDay(AlarmModel.WED));
-        mThurs.setChecked(mAlarm.getDay(AlarmModel.THURS));
-        mFri.setChecked(mAlarm.getDay(AlarmModel.FRI));
-        mSat.setChecked(mAlarm.getDay(AlarmModel.SAT));
-        mSun.setChecked(mAlarm.getDay(AlarmModel.SUN));
+        mMon.setChecked(mAlarm.getDay(Constants.MON));
+        mTues.setChecked(mAlarm.getDay(Constants.TUES));
+        mWed.setChecked(mAlarm.getDay(Constants.WED));
+        mThurs.setChecked(mAlarm.getDay(Constants.THURS));
+        mFri.setChecked(mAlarm.getDay(Constants.FRI));
+        mSat.setChecked(mAlarm.getDay(Constants.SAT));
+        mSun.setChecked(mAlarm.getDay(Constants.SUN));
     }
 
     @Override
@@ -100,13 +101,13 @@ public class EditAlarmActivity extends BaseActivity {
             mAlarm.label = label;
             mAlarm.message = message;
             mAlarm.active = true;
-            mAlarm.setDay(AlarmModel.MON, mMon.isChecked());
-            mAlarm.setDay(AlarmModel.TUES, mTues.isChecked());
-            mAlarm.setDay(AlarmModel.WED, mWed.isChecked());
-            mAlarm.setDay(AlarmModel.THURS, mThurs.isChecked());
-            mAlarm.setDay(AlarmModel.FRI, mFri.isChecked());
-            mAlarm.setDay(AlarmModel.SAT, mSat.isChecked());
-            mAlarm.setDay(AlarmModel.SUN, mSun.isChecked());
+            mAlarm.setDay(Constants.MON, mMon.isChecked());
+            mAlarm.setDay(Constants.TUES, mTues.isChecked());
+            mAlarm.setDay(Constants.WED, mWed.isChecked());
+            mAlarm.setDay(Constants.THURS, mThurs.isChecked());
+            mAlarm.setDay(Constants.FRI, mFri.isChecked());
+            mAlarm.setDay(Constants.SAT, mSat.isChecked());
+            mAlarm.setDay(Constants.SUN, mSun.isChecked());
             mAlarm.convertDays();
             appDatabase.AlarmDAO().updateAlarm(mAlarm);
             Toast.makeText(this, "sửa thành công", Toast.LENGTH_SHORT).show();
@@ -124,11 +125,11 @@ public class EditAlarmActivity extends BaseActivity {
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                if (mAlarm != null){
+                if (mAlarm != null) {
                     appDatabase.AlarmDAO().deleteAlarm(mAlarm);
                     Toast.makeText(EditAlarmActivity.this, "Xóa báo thức thành công", Toast.LENGTH_SHORT).show();
                     finish();
-                }else {
+                } else {
                     Toast.makeText(EditAlarmActivity.this, "Xóa báo thức không thành công", Toast.LENGTH_SHORT).show();
                     finish();
                 }

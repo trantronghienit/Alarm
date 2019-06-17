@@ -7,8 +7,20 @@ import android.os.Build;
 
 import androidx.core.app.ActivityCompat;
 
+import com.example.alarmpig.model.AlarmModel;
+import com.example.alarmpig.model.Days;
+
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+
+import static com.example.alarmpig.util.Constants.KEY_FRI;
+import static com.example.alarmpig.util.Constants.KEY_MON;
+import static com.example.alarmpig.util.Constants.KEY_SAT;
+import static com.example.alarmpig.util.Constants.KEY_SUN;
+import static com.example.alarmpig.util.Constants.KEY_THURS;
+import static com.example.alarmpig.util.Constants.KEY_TUES;
 
 public final class AlarmUtils {
 
@@ -22,11 +34,13 @@ public final class AlarmUtils {
             Manifest.permission.VIBRATE
     };
 
-    private AlarmUtils() { throw new AssertionError(); }
+    private AlarmUtils() {
+        throw new AssertionError();
+    }
 
     public static void checkAlarmPermissions(Activity activity) {
 
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return;
         }
 
@@ -34,7 +48,7 @@ public final class AlarmUtils {
                 activity, Manifest.permission.VIBRATE
         );
 
-        if(permission != PackageManager.PERMISSION_GRANTED) {
+        if (permission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
                     activity,
                     PERMISSIONS_ALARM,
@@ -52,4 +66,66 @@ public final class AlarmUtils {
         return AM_PM_FORMAT.format(time);
     }
 
+    // default time 7
+    public static int getTimeFormString(String timeString, int index) {
+        String result = timeString.split(":")[index];
+        if (result.isEmpty()) {
+            return Constants.TIME_DEFAULT;
+        }
+        return Integer.parseInt(result);
+    }
+
+
+    public static void getDayOfWeek(HashMap<Integer, Boolean> days, List<String> daysOfWeek) {
+        if (days != null && daysOfWeek != null) {
+            for (String day : daysOfWeek) {
+                int dayActive = getKeyFormStringDay(day);
+                if (dayActive != -1) {
+                    days.put(dayActive, true);
+                }
+            }
+        }
+    }
+
+    public static int getKeyFormStringDay(String keyDay) {
+        switch (keyDay) {
+            case KEY_MON:
+                return Constants.MON;
+            case KEY_TUES:
+                return Constants.TUES;
+            case Constants.KEY_WED:
+                return Constants.WED;
+            case KEY_THURS:
+                return Constants.THURS;
+            case KEY_FRI:
+                return Constants.FRI;
+            case KEY_SAT:
+                return Constants.SAT;
+            case KEY_SUN:
+                return Constants.SUN;
+            default:
+                return -1;
+        }
+    }
+
+    public static String getDayFormIdDay(int dayId) {
+        switch (dayId) {
+            case Constants.MON:
+                return Constants.KEY_MON;
+            case Constants.TUES:
+                return Constants.KEY_TUES;
+            case Constants.WED:
+                return Constants.KEY_WED;
+            case Constants.THURS:
+                return Constants.KEY_THURS;
+            case Constants.FRI:
+                return Constants.KEY_FRI;
+            case Constants.SAT:
+                return Constants.KEY_SAT;
+            case Constants.SUN:
+                return Constants.KEY_SUN;
+            default:
+                return "";
+        }
+    }
 }

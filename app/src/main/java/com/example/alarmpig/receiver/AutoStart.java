@@ -5,17 +5,36 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import androidx.room.Room;
+
+import com.example.alarmpig.db.AppDatabase;
 import com.example.alarmpig.model.AlarmModel;
+import com.example.alarmpig.util.LogUtils;
+import com.example.alarmpig.view.activity.MainActivity;
+
+import java.util.List;
+
+import static com.example.alarmpig.util.Constants.DATABASE_NAME;
 
 public class AutoStart extends BroadcastReceiver {
+    protected AppDatabase appDatabase;
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i("test", "onReceive: AutoStart" );
-        AlarmModel alarm = new AlarmModel();
+        LogUtils.r("boot completed start alarm");
         AlarmReceiver alarmReceiver = new AlarmReceiver();
         if (intent.getAction() != null &&
                 intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-            alarmReceiver.setAlarm(context, alarm);
+            appDatabase = Room.databaseBuilder(context ,
+                    AppDatabase.class, DATABASE_NAME)
+                    .allowMainThreadQueries()
+                    .fallbackToDestructiveMigration()
+                    .build();
+            List<AlarmModel> alarms  = appDatabase.AlarmDAO().getAllAlarm();
+            for (AlarmModel item : alarms){
+                alarmReceiver.setAlarm(context, item);
+                LogUtils.i("AutoStart" + item.toString());
+            }
         }
     }
 }

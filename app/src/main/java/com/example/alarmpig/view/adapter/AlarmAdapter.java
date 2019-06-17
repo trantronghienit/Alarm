@@ -97,29 +97,18 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
     private Spannable buildSelectedDays(AlarmModel alarm) {
 
         final int numDays = 7;
-        final HashMap<Integer , Boolean> days = alarm.days;
+        final HashMap<Integer , Boolean> days = alarm.getMapFormStringDay();
+
+        ArrayList<Integer> keyList = new ArrayList<Integer>(days.keySet());
+        ArrayList<Boolean> valueList = new ArrayList<Boolean>(days.values());
 
         final SpannableStringBuilder builder = new SpannableStringBuilder();
-        ForegroundColorSpan span;
-
-        int startIndex, endIndex;
         for (int i = 0; i < numDays; i++) {
-
-            startIndex = builder.length();
-
-            final String dayText = mDays[i];
-            builder.append(dayText);
-            builder.append(" ");
-
-            endIndex = startIndex + dayText.length();
-
-            boolean value = (new ArrayList<Boolean>(days.values())).get(i);
-            if(value) {
-                span = new ForegroundColorSpan(mAccentColor);
-                builder.setSpan(span, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            if (valueList.get(i)){ // is check
+                builder.append(AlarmUtils.getDayFormIdDay(keyList.get(i)));
+                builder.append(" ");
             }
         }
-
         return builder;
 
     }

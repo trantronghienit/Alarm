@@ -15,25 +15,23 @@ import android.util.Log;
 import com.example.alarmpig.R;
 import com.example.alarmpig.model.AlarmModel;
 import com.example.alarmpig.service.AlarmService;
+import com.example.alarmpig.util.AlarmUtils;
+import com.example.alarmpig.util.LogUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 
 public class AlarmReceiver extends BroadcastReceiver {
 
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.i("test", "onReceive: AlarmReceiver");
-//        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-//        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
-//        wl.acquire(10 * 60 * 1000L /*10 minutes*/);
-
+        LogUtils.r("start Receiver alarm");
         startServiceAlarm(context);
-
-        // Put here YOUR code.
-//        showNotification(context , intent);
-
-//        wl.release();
     }
 
     private void startServiceAlarm(Context context){
@@ -51,18 +49,36 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     public void setAlarm(Context context, AlarmModel info) {
-        Log.i("test", "setAlarm" );
+        LogUtils.r("start send broadcast alarm");
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(context, AlarmReceiver.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, info.hour);
-        calendar.set(Calendar.MINUTE, info.minute);
-        calendar.set(Calendar.SECOND, info.second);
+        SimpleDateFormat format1= new SimpleDateFormat("hh:mm:ss");
+        Date dt1 = null;
+        try {
+            dt1 = format1.parse(info.hour + ":" + info.minute + info.second);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        calendar.setTime(dt1);
+//        calendar.setTimeInMillis(System.currentTimeMillis());
+//        calendar.set(Calendar.HOUR, );
+//        calendar.set(Calendar.MINUTE, );
+//        calendar.set(Calendar.SECOND, );
+
+        final HashMap<Integer , Boolean> days = info.getMapFormStringDay();
+        ArrayList<Integer> keyList = new ArrayList<Integer>(days.keySet());
+        ArrayList<Boolean> valueList = new ArrayList<Boolean>(days.values());
+        for (int i = 0; i < keyList.size(); i++) {
+            if (valueList.get(i)){ // is check
+                calendar.set(Calendar.DAY_OF_WEEK, keyList.get(i));
+            }
+        }
+
         am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.INTERVAL_DAY, alarmIntent);
+                AlarmManager.ELAPSED_REALTIME, alarmIntent);
 
         ComponentName receiver = new ComponentName(context, AlarmReceiver.class);
         PackageManager pm = context.getPackageManager();

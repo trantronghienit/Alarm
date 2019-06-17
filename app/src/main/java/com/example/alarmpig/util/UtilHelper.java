@@ -65,4 +65,5 @@ public final class UtilHelper {
     public static String[] getStringArray(int res){
         return App.getContext().getResources().getStringArray(res);
     }
+
 }

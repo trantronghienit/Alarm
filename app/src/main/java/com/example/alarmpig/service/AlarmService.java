@@ -6,18 +6,34 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.example.alarmpig.util.AudioUtil;
 import com.example.alarmpig.util.Constants;
+import com.example.alarmpig.util.LogUtils;
 
 public class AlarmService extends Service {
 
     private long lastTime = 0;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("test", "onStartCommand: AlarmService");
-        AudioUtil.play(this , true);
+        LogUtils.s("onStartCommand: AlarmService");
+        AudioUtil.play(this, true, new AudioUtil.OnMediaPlayListener() {
+            @Override
+            public void onPrepared() {
+                LogUtils.e("play media onPrepared");
+            }
+
+            @Override
+            public void onError() {
+                LogUtils.e("play media error");
+            }
+
+            @Override
+            public void onCompletion(int loopCount) {
+                AudioUtil.loop(3);
+                LogUtils.e("play media complete");
+            }
+        });
         checkPressButtonVolume();
         return START_STICKY;
     }
@@ -29,7 +45,8 @@ public class AlarmService extends Service {
                 long currentTime = System.currentTimeMillis();
                 boolean isValidCycle = currentTime - lastTime < 1000; // 1 giay
                 if (isValidCycle && intent.getAction() != null && intent.getAction().equals(Constants.ACTION_VOLUME_CHANGE)){
-                    Log.i("test", "onReceive: change volume button");
+                    LogUtils.i("AlarmService onReceive: change volume button");
+                    // todo
 //                    AudioUtil.maxVolume(context);
                 }
                 lastTime = currentTime;

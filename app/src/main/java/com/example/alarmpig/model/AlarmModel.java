@@ -21,6 +21,14 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.alarmpig.util.Constants.FRI;
+import static com.example.alarmpig.util.Constants.MON;
+import static com.example.alarmpig.util.Constants.SAT;
+import static com.example.alarmpig.util.Constants.SUN;
+import static com.example.alarmpig.util.Constants.THURS;
+import static com.example.alarmpig.util.Constants.TUES;
+import static com.example.alarmpig.util.Constants.WED;
+
 @Entity()
 public class AlarmModel implements Parcelable {
 
@@ -89,6 +97,12 @@ public class AlarmModel implements Parcelable {
 
     }
 
+    public HashMap<Integer, Boolean> getMapFormStringDay() {
+        Type type = new TypeToken<HashMap<Integer, Boolean>>(){}.getType();
+        days = UtilHelper.getGson().fromJson(this.dayString , type);
+        return days;
+    }
+
     public void convertDays(){
         try {
             Type type = new TypeToken<HashMap<Integer, Boolean>>(){}.getType();
@@ -117,16 +131,6 @@ public class AlarmModel implements Parcelable {
         dest.writeLong(time);
     }
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({MON,TUES,WED,THURS,FRI,SAT,SUN})
-    @interface Days{}
-    public static final int MON = Calendar.MONDAY;
-    public static final int TUES = Calendar.TUESDAY;
-    public static final int WED = Calendar.WEDNESDAY;
-    public static final int THURS = Calendar.THURSDAY;
-    public static final int FRI = Calendar.FRIDAY;
-    public static final int SAT = Calendar.SATURDAY;
-    public static final int SUN = Calendar.SUNDAY;
 
     private static HashMap<Integer, Boolean> buildBaseDaysArray() {
 
@@ -141,6 +145,21 @@ public class AlarmModel implements Parcelable {
         array.put(SUN, false);
 
         return array;
+    }
 
+    @Override
+    public String toString() {
+        return "AlarmModel{" +
+                "alarmId=" + alarmId +
+                ", hour=" + hour +
+                ", minute=" + minute +
+                ", second=" + second +
+                ", days=" + days +
+                ", dayString='" + dayString + '\'' +
+                ", active=" + active +
+                ", label='" + label + '\'' +
+                ", message='" + message + '\'' +
+                ", time=" + time +
+                '}';
     }
 }

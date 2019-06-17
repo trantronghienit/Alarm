@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.alarmpig.R;
 import com.example.alarmpig.model.AlarmModel;
+import com.example.alarmpig.util.Constants;
 import com.example.alarmpig.util.ViewUtils;
 
 import java.util.Calendar;
@@ -75,13 +76,13 @@ public class AddAlarmActivity extends BaseActivity {
             alarm.label = label;
             alarm.message = message;
             alarm.active = true;
-            alarm.setDay(AlarmModel.MON, mMon.isChecked());
-            alarm.setDay(AlarmModel.TUES, mTues.isChecked());
-            alarm.setDay(AlarmModel.WED, mWed.isChecked());
-            alarm.setDay(AlarmModel.THURS, mThurs.isChecked());
-            alarm.setDay(AlarmModel.FRI, mFri.isChecked());
-            alarm.setDay(AlarmModel.SAT, mSat.isChecked());
-            alarm.setDay(AlarmModel.SUN, mSun.isChecked());
+            alarm.setDay(Constants.MON, mMon.isChecked());
+            alarm.setDay(Constants.TUES, mTues.isChecked());
+            alarm.setDay(Constants.WED, mWed.isChecked());
+            alarm.setDay(Constants.THURS, mThurs.isChecked());
+            alarm.setDay(Constants.FRI, mFri.isChecked());
+            alarm.setDay(Constants.SAT, mSat.isChecked());
+            alarm.setDay(Constants.SUN, mSun.isChecked());
             alarm.convertDays();
 
             appDatabase.AlarmDAO().insertOnlySingleAlarm(alarm);

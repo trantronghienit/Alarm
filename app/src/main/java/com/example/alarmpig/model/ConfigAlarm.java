@@ -1,5 +1,7 @@
 package com.example.alarmpig.model;
 
+import com.example.alarmpig.util.Constants;
+import com.example.alarmpig.util.SharedPrefs;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -11,7 +13,7 @@ public class ConfigAlarm {
     @SerializedName("alarm_config")
     private AlarmConfig alarmConfig;
     @SerializedName("is_change")
-    private boolean isChange;
+    private int isChange;
 
     public VersionCheck getVersionCheck() {
         return versionCheck;
@@ -30,6 +32,10 @@ public class ConfigAlarm {
     }
 
     public boolean isChange() {
+        return SharedPrefs.getInstance().get(Constants.KEY_IS_CHANGE , Integer.class) < isChange;
+    }
+
+    public int versionChange() {
         return isChange;
     }
 

@@ -24,12 +24,14 @@
         <activity android:name=".view.activity.EditAlarmActivity"/>
         <activity android:name=".view.activity.AddAlarmActivity" />
         <activity android:name=".view.activity.DashboardAlarmActivity" />
-        <activity android:name=".view.activity.MainActivity">
+        <activity android:name=".view.activity.SplashActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".view.activity.MainActivity">
+
         </activity>
 
         <receiver
