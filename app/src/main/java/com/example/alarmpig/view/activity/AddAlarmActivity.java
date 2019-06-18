@@ -1,6 +1,9 @@
 package com.example.alarmpig.view.activity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
@@ -29,6 +32,7 @@ public class AddAlarmActivity extends BaseActivity {
 
 
         mTimePicker = findViewById(R.id.edit_alarm_time_picker);
+        mTimePicker.setIs24HourView(true);
 
         mLabel = findViewById(R.id.edit_alarm_label);
 
@@ -61,7 +65,7 @@ public class AddAlarmActivity extends BaseActivity {
 
     private void addAlarm() {
         try {
-            String label = mLabel.getText().toString();
+            String label = TextUtils.isEmpty(mLabel.getText().toString()) ? "label_" + System.currentTimeMillis() : mLabel.getText().toString();
             String message = mLabel.getText().toString();
             AlarmModel alarm = new AlarmModel();
 
@@ -69,7 +73,6 @@ public class AddAlarmActivity extends BaseActivity {
             time.set(Calendar.MINUTE, ViewUtils.getTimePickerMinute(mTimePicker));
             time.set(Calendar.HOUR_OF_DAY, ViewUtils.getTimePickerHour(mTimePicker));
 
-            alarm.time = time.getTimeInMillis();
             alarm.minute = ViewUtils.getTimePickerMinute(mTimePicker);
             alarm.second = 0;
             alarm.hour = ViewUtils.getTimePickerHour(mTimePicker);
@@ -87,6 +90,12 @@ public class AddAlarmActivity extends BaseActivity {
 
             appDatabase.AlarmDAO().insertOnlySingleAlarm(alarm);
             Toast.makeText(this, "thêm thành công", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent();
+            // to do get id
+//            intent.putExtra(Constants.KEY_ALARM_ID , id);
+            intent.putExtra(Constants.KEY_TYPE , Constants.ADD_TYPE);
+            setResult(Activity.RESULT_OK, intent);
+
             finish();
         } catch (Exception e) {
             Toast.makeText(this, "Thêm alarm lỗi " + e.getMessage(), Toast.LENGTH_SHORT).show();

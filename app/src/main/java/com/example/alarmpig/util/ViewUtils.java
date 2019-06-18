@@ -15,14 +15,7 @@ public final class ViewUtils {
         return dp*Resources.getSystem().getDisplayMetrics().density;
     }
 
-    public static void setTimePickerTime(TimePicker picker, long time) {
-
-        final Calendar c = Calendar.getInstance();
-        c.setTimeInMillis(time);
-
-        final int minutes = c.get(Calendar.MINUTE);
-        final int hours = c.get(Calendar.HOUR_OF_DAY);
-
+    public static void setTimePickerTime(TimePicker picker, int hours ,int minutes) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             picker.setMinute(minutes);
             picker.setHour(hours);

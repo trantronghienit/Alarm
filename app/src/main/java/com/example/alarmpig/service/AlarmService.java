@@ -14,13 +14,14 @@ import com.example.alarmpig.util.LogUtils;
 public class AlarmService extends Service {
 
     private long lastTime = 0;
+
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, int flags,final int startId) {
         LogUtils.s("onStartCommand: AlarmService");
         AudioUtil.play(this, true, new AudioUtil.OnMediaPlayListener() {
             @Override
             public void onPrepared() {
-                LogUtils.e("play media onPrepared");
+                LogUtils.i("play media onPrepared");
             }
 
             @Override
@@ -29,9 +30,15 @@ public class AlarmService extends Service {
             }
 
             @Override
-            public void onCompletion(int loopCount) {
-                AudioUtil.loop(3);
-                LogUtils.e("play media complete");
+            public void onRepeatSuccess(int loopCount) {
+                AudioUtil.repeat(3);
+                LogUtils.i("play media onRepeatSuccess " + loopCount);
+            }
+
+            @Override
+            public void onCompleted() {
+                AlarmService.this.stopSelf(startId);
+                LogUtils.s("stop service alarm");
             }
         });
         checkPressButtonVolume();
@@ -46,7 +53,6 @@ public class AlarmService extends Service {
                 boolean isValidCycle = currentTime - lastTime < 1000; // 1 giay
                 if (isValidCycle && intent.getAction() != null && intent.getAction().equals(Constants.ACTION_VOLUME_CHANGE)){
                     LogUtils.i("AlarmService onReceive: change volume button");
-                    // todo
 //                    AudioUtil.maxVolume(context);
                 }
                 lastTime = currentTime;

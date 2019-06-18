@@ -15,6 +15,7 @@ import static android.content.Context.AUDIO_SERVICE;
 public final class AudioUtil {
     private static MediaPlayer mp;
     private static int count;
+    private static boolean endRepeat;
 
     public static void play(Context context, boolean isVibrator , final OnMediaPlayListener listener){
         if (mp == null){
@@ -41,8 +42,12 @@ public final class AudioUtil {
             {
                 mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, 0);
                 if (listener != null){
-                    listener.onCompletion(count);
+                    listener.onRepeatSuccess(count);
+                    if(endRepeat){
+                        listener.onCompleted();
+                    }
                 }
+
             }
         });
         mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -68,17 +73,22 @@ public final class AudioUtil {
         }
     }
 
-    public static void loop(int counter){
+    public static void repeat(int counter){
         count++;
         if (mp != null && count < counter){
-            LogUtils.i("l");
+            LogUtils.i("Repeat media alarm " + count);
+            endRepeat = false;
             mp.seekTo(0);
             mp.start();
+        }else {
+            LogUtils.i("end Repeat media alarm " + count);
+            endRepeat = true;
         }
     }
 
     public static void stop(){
         if (mp != null &&  mp.isPlaying()){
+            LogUtils.i("stop media alarm " + count);
             count = 0;
             mp.stop();
             mp.reset();
@@ -86,6 +96,7 @@ public final class AudioUtil {
     }
 
     public static void maxVolume(Context context) {
+        LogUtils.i("maxVolume media alarm " + count);
         final AudioManager mAudioManager = (AudioManager) context.getSystemService(AUDIO_SERVICE);
         final int originalVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
@@ -94,6 +105,7 @@ public final class AudioUtil {
     public interface OnMediaPlayListener{
         void onPrepared();
         void onError();
-        void onCompletion(int loopCount);
+        void onRepeatSuccess(int loopCount);
+        void onCompleted();
     }
 }

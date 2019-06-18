@@ -11,6 +11,8 @@ import com.example.alarmpig.model.AlarmModel;
 import com.example.alarmpig.model.Days;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -127,5 +129,32 @@ public final class AlarmUtils {
             default:
                 return "";
         }
+    }
+
+    public static String formatAlarm(int hour, int minute) {
+        String hourString = String.valueOf(hour);
+        String minuteString = String.valueOf(minute);
+        if (hourString.length() <= 1){
+            hourString = "0" + hourString;
+        }
+        if (minuteString.length() <= 1){
+            minuteString = "0" + minuteString ;
+        }
+        return String.format("%s:%s" , hourString , minuteString);
+    }
+
+    public static boolean checkExistsCurrentDay(ArrayList<Integer> days) {
+        Calendar calendar = Calendar.getInstance();
+        int dayCurrent = calendar.get(Calendar.DAY_OF_WEEK);
+        int  day;
+        for (int i = 0; i < days.size(); i++) {
+            day = days.get(i);
+            if (dayCurrent != day){
+                continue;
+            }else {
+                return true;
+            }
+        }
+        return false;
     }
 }

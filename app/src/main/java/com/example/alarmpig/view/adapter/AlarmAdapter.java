@@ -8,6 +8,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
@@ -28,6 +29,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
 
     private String[] mDays;
     private OnItemClickListener mOnItemClickListener;
+    private OnItemCheckActiveListener mOnItemCheckActiveListener;
     private int mAccentColor = -1;
 
     public AlarmAdapter(OnItemClickListener mOnItemClickListener) {
@@ -42,7 +44,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
 
         final Context c = holder.itemView.getContext();
 
@@ -56,15 +58,30 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
 
         final AlarmModel alarm = mAlarms.get(position);
 
-        holder.time.setText(AlarmUtils.getReadableTime(alarm.time));
-        holder.amPm.setText(AlarmUtils.getAmPm(alarm.time));
+        holder.time.setText(AlarmUtils.formatAlarm(alarm.hour , alarm.minute));
         holder.label.setText(alarm.label);
         holder.days.setText(buildSelectedDays(alarm));
+        if (alarm.active){
+            holder.active.setImageResource(R.drawable.ic_alarm_active);
+        }else {
+            holder.active.setImageResource(R.drawable.ic_alarm_unactive);
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mOnItemClickListener.onItemClick(alarm);
+            }
+        });
+
+        holder.active.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mOnItemCheckActiveListener != null){
+                    alarm.active = !alarm.active;
+                    notifyItemChanged(position);
+                    mOnItemCheckActiveListener.onItemCheckActive(alarm);
+                }
             }
         });
 
@@ -83,6 +100,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
     static final class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView time, amPm, label, days;
+        ImageView active;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -91,6 +109,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
             amPm = itemView.findViewById(R.id.ar_am_pm);
             label = itemView.findViewById(R.id.ar_label);
             days = itemView.findViewById(R.id.ar_days);
+            active = itemView.findViewById(R.id.ar_icon);
 
         }
     }
@@ -113,8 +132,15 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
 
     }
 
+    public void setOnItemCheckActiveListener(OnItemCheckActiveListener mOnItemCheckActiveListener) {
+        this.mOnItemCheckActiveListener = mOnItemCheckActiveListener;
+    }
 
     public interface OnItemClickListener {
         void onItemClick(AlarmModel model);
+    }
+
+    public interface OnItemCheckActiveListener {
+        void onItemCheckActive(AlarmModel model);
     }
 }

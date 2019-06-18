@@ -7,11 +7,29 @@ import android.os.Build;
 import android.os.Bundle;
 import android.widget.TimePicker;
 
+import androidx.annotation.StringRes;
+
 import com.example.alarmpig.App;
 import com.google.gson.Gson;
 
 public final class UtilHelper {
     private static Gson gson;
+
+    public static String getStringRes(@StringRes int resString) {
+        try {
+            return App.getContext().getResources().getString(resString);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    public static String getStringRes(@StringRes int resString, Object... formatArr) {
+        try {
+            return App.getContext().getResources().getString(resString, formatArr);
+        } catch (Exception e) {
+            return "";
+        }
+    }
 
     public static <T extends Activity> void switchActivity(T context, Class clazz) {
         if (context != null) {
@@ -25,6 +43,21 @@ public final class UtilHelper {
             Intent intentToLaunch = new Intent(context, clazz);
             intentToLaunch.putExtras(data);
             context.startActivity(intentToLaunch);
+        }
+    }
+
+    public static <T extends Activity> void switchActivity(T context, Class clazz, int requestCode) {
+        if (context != null) {
+            Intent intentToLaunch = new Intent(context, clazz);
+            context.startActivityForResult(intentToLaunch , requestCode);
+        }
+    }
+
+    public static <T extends Activity> void switchActivity(T context, Class clazz, Bundle data, int requestCode) {
+        if (context != null) {
+            Intent intentToLaunch = new Intent(context, clazz);
+            intentToLaunch.putExtras(data);
+            context.startActivityForResult(intentToLaunch ,requestCode);
         }
     }
 

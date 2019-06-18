@@ -7,8 +7,8 @@ import android.widget.Button;
 
 import com.example.alarmpig.R;
 import com.example.alarmpig.model.AlarmModel;
-import com.example.alarmpig.receiver.AlarmReceiver;
 import com.example.alarmpig.service.AlarmService;
+import com.example.alarmpig.util.AlarmController;
 import com.example.alarmpig.util.LogUtils;
 
 import java.util.List;
@@ -18,6 +18,7 @@ public class MainActivity extends BaseActivity {
     private Button btnStart;
     private Button btnStop;
     private Button btnDashboard;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class MainActivity extends BaseActivity {
             public void onClick(View v) {
                 Intent intentToService = new Intent(MainActivity.this, AlarmService.class);
                 stopService(intentToService);
+                stopAlarm();
                 startAlarm();
             }
         });
@@ -41,6 +43,7 @@ public class MainActivity extends BaseActivity {
             public void onClick(View v) {
                 Intent intentToService = new Intent(MainActivity.this, AlarmService.class);
                 stopService(intentToService);
+                stopAlarm();
             }
         });
 
@@ -54,11 +57,16 @@ public class MainActivity extends BaseActivity {
     }
 
     private void startAlarm() {
-        AlarmReceiver alarmReceiver = new AlarmReceiver();
-        List<AlarmModel> alarms  = appDatabase.AlarmDAO().getAllAlarm();
-        for (AlarmModel item : alarms){
-            alarmReceiver.setAlarm(MainActivity.this, item);
+        List<AlarmModel> alarms = appDatabase.AlarmDAO().getAllAlarm();
+        for (AlarmModel item : alarms) {
+            AlarmController.setAlarm(this, item);
             LogUtils.i(item.toString());
         }
     }
+
+    private void stopAlarm() {
+        List<AlarmModel> alarmModels = appDatabase.AlarmDAO().getAllAlarm();
+        AlarmController.cancelAlarmAll(this, alarmModels);
+    }
+
 }

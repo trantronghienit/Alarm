@@ -3,14 +3,13 @@ package com.example.alarmpig.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import androidx.room.Room;
 
 import com.example.alarmpig.db.AppDatabase;
 import com.example.alarmpig.model.AlarmModel;
+import com.example.alarmpig.util.AlarmController;
 import com.example.alarmpig.util.LogUtils;
-import com.example.alarmpig.view.activity.MainActivity;
 
 import java.util.List;
 
@@ -22,7 +21,6 @@ public class AutoStart extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         LogUtils.r("boot completed start alarm");
-        AlarmReceiver alarmReceiver = new AlarmReceiver();
         if (intent.getAction() != null &&
                 intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
             appDatabase = Room.databaseBuilder(context ,
@@ -32,8 +30,7 @@ public class AutoStart extends BroadcastReceiver {
                     .build();
             List<AlarmModel> alarms  = appDatabase.AlarmDAO().getAllAlarm();
             for (AlarmModel item : alarms){
-                alarmReceiver.setAlarm(context, item);
-                LogUtils.i("AutoStart" + item.toString());
+                AlarmController.setAlarm(context, item);
             }
         }
     }

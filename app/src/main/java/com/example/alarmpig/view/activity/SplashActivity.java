@@ -8,23 +8,14 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
-
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-
-import trantronghien.io.com.TimeBasedOneTimePasswordGenerator;
 
 import com.example.alarmpig.BuildConfig;
 import com.example.alarmpig.R;
@@ -38,7 +29,6 @@ import com.example.alarmpig.util.Constants;
 import com.example.alarmpig.util.LogUtils;
 import com.example.alarmpig.util.SharedPrefs;
 import com.example.alarmpig.util.UtilHelper;
-import com.example.alarmpig.util.ViewUtils;
 
 import java.io.File;
 import java.security.InvalidKeyException;
@@ -46,6 +36,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 public class SplashActivity extends BaseActivity implements FileManager.OnDownloadFileListener {
 
@@ -111,33 +104,33 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
             }
         });
 
-        TimeBasedOneTimePasswordGenerator totp = null;
-        try {
-            totp = new TimeBasedOneTimePasswordGenerator();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        SecretKey key = null;
-        {
-            final KeyGenerator keyGenerator;
-            try {
-                keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
-                // HMAC-SHA1 and HMAC-SHA256 prefer 64-byte (512-bit) keys; HMAC-SHA512 prefers 128-byte (1024-bit) keys
-                keyGenerator.init(512);
-
-                key = keyGenerator.generateKey();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            }
-
-
-        }
-        final Date now = new Date();
-        try {
-            System.out.format("Current password: %06d\n", totp.generateOneTimePassword(key, now));
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        }
+//        TimeBasedOneTimePasswordGenerator totp = null;
+//        try {
+//            totp = new TimeBasedOneTimePasswordGenerator();
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
+//        SecretKey key = null;
+//        {
+//            final KeyGenerator keyGenerator;
+//            try {
+//                keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
+//                // HMAC-SHA1 and HMAC-SHA256 prefer 64-byte (512-bit) keys; HMAC-SHA512 prefers 128-byte (1024-bit) keys
+//                keyGenerator.init(512);
+//
+//                key = keyGenerator.generateKey();
+//            } catch (NoSuchAlgorithmException e) {
+//                e.printStackTrace();
+//            }
+//
+//
+//        }
+//        final Date now = new Date();
+//        try {
+//            System.out.format("Current password: %06d\n", totp.generateOneTimePassword(key, now));
+//        } catch (InvalidKeyException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private void inIt() {
@@ -167,7 +160,6 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
         final Calendar time = Calendar.getInstance();
         time.set(Calendar.MINUTE, model.minute);
         time.set(Calendar.HOUR_OF_DAY, model.hour);
-        model.time = time.getTimeInMillis();
 
         AlarmUtils.getDayOfWeek(model.days, alramConfig.getDaysOfWeek());
         model.convertDays();

@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
@@ -12,12 +11,7 @@ import androidx.room.PrimaryKey;
 import com.example.alarmpig.util.UtilHelper;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONObject;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Type;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +27,7 @@ import static com.example.alarmpig.util.Constants.WED;
 public class AlarmModel implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
-    public long alarmId;
+    public int alarmId;
     public int hour;
     public int minute;
     public int second;
@@ -43,15 +37,15 @@ public class AlarmModel implements Parcelable {
     public boolean active;
     public String label;
     public String message;
-    public long time;
 
     public AlarmModel(){
         days = buildBaseDaysArray();
         convertDays();
     }
 
+
     protected AlarmModel(Parcel in) {
-        alarmId = in.readLong();
+        alarmId = in.readInt();
         hour = in.readInt();
         minute = in.readInt();
         second = in.readInt();
@@ -59,7 +53,23 @@ public class AlarmModel implements Parcelable {
         active = in.readByte() != 0;
         label = in.readString();
         message = in.readString();
-        time = in.readLong();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(alarmId);
+        dest.writeInt(hour);
+        dest.writeInt(minute);
+        dest.writeInt(second);
+        dest.writeString(dayString);
+        dest.writeByte((byte) (active ? 1 : 0));
+        dest.writeString(label);
+        dest.writeString(message);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<AlarmModel> CREATOR = new Creator<AlarmModel>() {
@@ -85,7 +95,7 @@ public class AlarmModel implements Parcelable {
     public boolean getDay(@Days int day) {
         Type type = new TypeToken<HashMap<Integer, Boolean>>(){}.getType();
         days = UtilHelper.getGson().fromJson(this.dayString , type);
-        if (days.isEmpty()){
+        if (days == null || days.isEmpty()){
             return false;
         }
         boolean isKeyPresent = days.containsKey(day);
@@ -111,24 +121,6 @@ public class AlarmModel implements Parcelable {
             e.printStackTrace();
         }
 
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(alarmId);
-        dest.writeInt(hour);
-        dest.writeInt(minute);
-        dest.writeInt(second);
-        dest.writeString(dayString);
-        dest.writeByte((byte) (active ? 1 : 0));
-        dest.writeString(label);
-        dest.writeString(message);
-        dest.writeLong(time);
     }
 
 
@@ -159,7 +151,6 @@ public class AlarmModel implements Parcelable {
                 ", active=" + active +
                 ", label='" + label + '\'' +
                 ", message='" + message + '\'' +
-                ", time=" + time +
                 '}';
     }
 }

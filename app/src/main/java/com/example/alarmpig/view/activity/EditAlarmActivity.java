@@ -1,7 +1,9 @@
 package com.example.alarmpig.view.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +37,7 @@ public class EditAlarmActivity extends BaseActivity {
         }
 
         mTimePicker = findViewById(R.id.edit_alarm_time_picker);
+        mTimePicker.setIs24HourView(true);
 
         mLabel = findViewById(R.id.edit_alarm_label);
 
@@ -50,7 +53,7 @@ public class EditAlarmActivity extends BaseActivity {
     }
 
     private void updateData() {
-        ViewUtils.setTimePickerTime(mTimePicker, mAlarm.time);
+        ViewUtils.setTimePickerTime(mTimePicker, mAlarm.hour, mAlarm.minute);
         mLabel.setText(mAlarm.label);
         setDayCheckboxes(mAlarm);
     }
@@ -94,7 +97,6 @@ public class EditAlarmActivity extends BaseActivity {
             final Calendar time = Calendar.getInstance();
             time.set(Calendar.MINUTE, ViewUtils.getTimePickerMinute(mTimePicker));
             time.set(Calendar.HOUR_OF_DAY, ViewUtils.getTimePickerHour(mTimePicker));
-            mAlarm.time = time.getTimeInMillis();
             mAlarm.minute = ViewUtils.getTimePickerMinute(mTimePicker);
             mAlarm.second = 0;
             mAlarm.hour = ViewUtils.getTimePickerHour(mTimePicker);
@@ -111,6 +113,11 @@ public class EditAlarmActivity extends BaseActivity {
             mAlarm.convertDays();
             appDatabase.AlarmDAO().updateAlarm(mAlarm);
             Toast.makeText(this, "sửa thành công", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent();
+            intent.putExtra(Constants.KEY_ALARM_ID , mAlarm.alarmId);
+            intent.putExtra(Constants.KEY_TYPE , Constants.EDIT_TYPE);
+            setResult(Activity.RESULT_OK, intent);
+
             finish();
         } catch (Exception e) {
             Toast.makeText(this, "sửa alarm lỗi " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -126,11 +133,19 @@ public class EditAlarmActivity extends BaseActivity {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (mAlarm != null) {
+                    int idAlarm = mAlarm.alarmId;
                     appDatabase.AlarmDAO().deleteAlarm(mAlarm);
                     Toast.makeText(EditAlarmActivity.this, "Xóa báo thức thành công", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra(Constants.KEY_ALARM_ID , idAlarm);
+                    intent.putExtra(Constants.KEY_TYPE , Constants.DEL_TYPE);
+                    setResult(Activity.RESULT_OK , intent);
                     finish();
                 } else {
                     Toast.makeText(EditAlarmActivity.this, "Xóa báo thức không thành công", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent();
+                    intent.putExtra(Constants.KEY_TYPE , Constants.DEL_TYPE);
+                    setResult(Activity.RESULT_OK , intent);
                     finish();
                 }
             }

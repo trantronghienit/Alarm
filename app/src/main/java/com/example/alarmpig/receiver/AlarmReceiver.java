@@ -10,13 +10,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
+import android.util.SparseIntArray;
+
+import androidx.core.app.NotificationCompat;
 
 import com.example.alarmpig.R;
 import com.example.alarmpig.model.AlarmModel;
 import com.example.alarmpig.service.AlarmService;
 import com.example.alarmpig.util.AlarmUtils;
+import com.example.alarmpig.util.Constants;
 import com.example.alarmpig.util.LogUtils;
+import com.example.alarmpig.util.UtilHelper;
+import com.example.alarmpig.view.activity.MainActivity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,71 +35,54 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class AlarmReceiver extends BroadcastReceiver {
-
+    private static final int TIME_VIBRATE = 1000;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         LogUtils.r("start Receiver alarm");
-        startServiceAlarm(context);
+        if (intent.getExtras() != null) {
+            Bundle bundle = intent.getExtras();
+            int hour = bundle.getInt(Constants.HOUR, 0);
+            ArrayList<Integer> day = bundle.getIntegerArrayList(Constants.DAY);
+            int minute = bundle.getInt(Constants.MINUTE, 0);
+
+            if (day != null && AlarmUtils.checkExistsCurrentDay(day)){
+                LogUtils.r("Receiver alarm day: " + AlarmUtils.getDayFormIdDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) + ":" + hour + ":" + minute);
+                startServiceAlarm(context);
+                showNotification(context, intent);
+            }else {
+                LogUtils.r("not alarm with day: " + AlarmUtils.getDayFormIdDay(Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) + ":" + hour + ":" + minute);
+            }
+        }
     }
 
-    private void startServiceAlarm(Context context){
+    private void startServiceAlarm(Context context) {
         Intent intentToService = new Intent(context, AlarmService.class);
         context.startService(intentToService);
     }
 
     private void showNotification(Context context, Intent intent) {
-        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification notification = new Notification(R.drawable.ic_alarm_white, "Wake up alarm", System.currentTimeMillis());
-        notification.flags = Notification.FLAG_INSISTENT;
-        notification.sound = Uri.parse("android.resource://com.example.alarmpig/" + R.raw.notification);
-        notification.contentIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);;
-        manager.notify(1, notification);
-    }
-
-    public void setAlarm(Context context, AlarmModel info) {
-        LogUtils.r("start send broadcast alarm");
-        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat format1= new SimpleDateFormat("hh:mm:ss");
-        Date dt1 = null;
-        try {
-            dt1 = format1.parse(info.hour + ":" + info.minute + info.second);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        calendar.setTime(dt1);
-//        calendar.setTimeInMillis(System.currentTimeMillis());
-//        calendar.set(Calendar.HOUR, );
-//        calendar.set(Calendar.MINUTE, );
-//        calendar.set(Calendar.SECOND, );
-
-        final HashMap<Integer , Boolean> days = info.getMapFormStringDay();
-        ArrayList<Integer> keyList = new ArrayList<Integer>(days.keySet());
-        ArrayList<Boolean> valueList = new ArrayList<Boolean>(days.values());
-        for (int i = 0; i < keyList.size(); i++) {
-            if (valueList.get(i)){ // is check
-                calendar.set(Calendar.DAY_OF_WEEK, keyList.get(i));
-            }
-        }
-
-        am.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                AlarmManager.ELAPSED_REALTIME, alarmIntent);
-
-        ComponentName receiver = new ComponentName(context, AlarmReceiver.class);
-        PackageManager pm = context.getPackageManager();
-        pm.setComponentEnabledSetting(receiver,
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                PackageManager.DONT_KILL_APP);
-    }
-
-    public void cancelAlarm(Context context) {
-        Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent sender = PendingIntent.getBroadcast(context, 0, intent, 0);
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.cancel(sender);
+        int index = intent.getIntExtra(Constants.KEY_TYPE, 0);
+        Intent notificationIntent = new Intent(context, MainActivity.class);
+        notificationIntent
+                .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        int requestID = (int) System.currentTimeMillis();
+        PendingIntent contentIntent = PendingIntent
+                .getActivity(context, requestID, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(UtilHelper.getStringRes(R.string.app_name))
+                        .setContentText("nhấn vào để tắt báo thức")
+//                        .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+//                        .setDefaults(Notification.DEFAULT_SOUND)
+                        .setAutoCancel(true)
+                        .setPriority(6)
+                        .setVibrate(new long[]{TIME_VIBRATE, TIME_VIBRATE, TIME_VIBRATE, TIME_VIBRATE,
+                                TIME_VIBRATE})
+                        .setContentIntent(contentIntent);
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(index, builder.build());
     }
 }
