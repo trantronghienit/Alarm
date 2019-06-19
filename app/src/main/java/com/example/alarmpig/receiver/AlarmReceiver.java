@@ -1,25 +1,15 @@
 package com.example.alarmpig.receiver;
 
-import android.app.AlarmManager;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.util.Log;
-import android.util.SparseIntArray;
 
 import androidx.core.app.NotificationCompat;
 
 import com.example.alarmpig.R;
-import com.example.alarmpig.model.AlarmModel;
 import com.example.alarmpig.service.AlarmService;
 import com.example.alarmpig.util.AlarmUtils;
 import com.example.alarmpig.util.Constants;
@@ -27,12 +17,8 @@ import com.example.alarmpig.util.LogUtils;
 import com.example.alarmpig.util.UtilHelper;
 import com.example.alarmpig.view.activity.MainActivity;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private static final int TIME_VIBRATE = 1000;

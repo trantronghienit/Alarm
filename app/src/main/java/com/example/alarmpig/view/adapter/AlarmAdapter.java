@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.alarmpig.R;
 import com.example.alarmpig.model.AlarmModel;
 import com.example.alarmpig.util.AlarmUtils;
+import com.example.alarmpig.util.Constants;
 import com.example.alarmpig.util.UtilHelper;
 
 import java.util.ArrayList;
@@ -61,10 +62,18 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.ViewHolder> 
         holder.time.setText(AlarmUtils.formatAlarm(alarm.hour , alarm.minute));
         holder.label.setText(alarm.label);
         holder.days.setText(buildSelectedDays(alarm));
-        if (alarm.active){
-            holder.active.setImageResource(R.drawable.ic_alarm_active);
+        if (alarm.type == Constants.TYPE_ALARM){
+            if (alarm.active){
+                holder.active.setImageResource(R.drawable.ic_alarm_active);
+            }else {
+                holder.active.setImageResource(R.drawable.ic_alarm_unactive);
+            }
         }else {
-            holder.active.setImageResource(R.drawable.ic_alarm_unactive);
+            if (alarm.active){
+                holder.active.setImageResource(R.drawable.ic_notification_active);
+            }else {
+                holder.active.setImageResource(R.drawable.ic_notification_unactive);
+            }
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

@@ -37,6 +37,7 @@ public class AlarmModel implements Parcelable {
     public boolean active;
     public String label;
     public String message;
+    public int type;
 
     public AlarmModel(){
         days = buildBaseDaysArray();
@@ -53,6 +54,7 @@ public class AlarmModel implements Parcelable {
         active = in.readByte() != 0;
         label = in.readString();
         message = in.readString();
+        type = in.readInt();
     }
 
     @Override
@@ -65,6 +67,7 @@ public class AlarmModel implements Parcelable {
         dest.writeByte((byte) (active ? 1 : 0));
         dest.writeString(label);
         dest.writeString(message);
+        dest.writeInt(type);
     }
 
     @Override

@@ -7,10 +7,25 @@ import android.os.Build;
 import android.os.Bundle;
 import android.widget.TimePicker;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.example.alarmpig.App;
+import com.example.alarmpig.model.FirebaseInfoDevice;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
+
+import java.security.InvalidParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public final class UtilHelper {
     private static Gson gson;
@@ -99,4 +114,100 @@ public final class UtilHelper {
         return App.getContext().getResources().getStringArray(res);
     }
 
+    public static void saveInFirebase(String... values){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference(Constants.ALARM_FIREBASE_REF);
+        for (int i = 0; i < values.length; i++) {
+            myRef.setValue(values[i]);
+        }
+        myRef.push();
+    }
+
+    public static void saveInfoAppInFirebase(FirebaseInfoDevice infoDevice,DatabaseReference.CompletionListener completionListener ){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference(Constants.ALARM_FIREBASE_REF);
+        myRef.setValue(infoDevice, completionListener);
+        myRef.push();
+    }
+
+
+    /**=========   SECURITY ===========================
+     */
+    public static SecretKey generateAESKey(int keysize)
+            throws InvalidParameterException {
+        try {
+            if (Cipher.getMaxAllowedKeyLength(Constants.ALGORITHM) < keysize) {
+                // this may be an issue if unlimited crypto is not installed
+                throw new InvalidParameterException("Key size of " + keysize
+                        + " not supported in this runtime");
+            }
+
+            final KeyGenerator keyGen = KeyGenerator.getInstance(Constants.ALGORITHM);
+            keyGen.init(keysize);
+            return keyGen.generateKey();
+        } catch (final NoSuchAlgorithmException e) {
+            // AES functionality is a requirement for any Java SE runtime
+            throw new IllegalStateException(
+                    "AES should always be present in a Java SE runtime", e);
+        }
+    }
+
+    public static SecretKey decodeBase64ToAESKey(final String encodedKey)
+            throws IllegalArgumentException {
+        try {
+            // throws IllegalArgumentException - if src is not in valid Base64
+            // scheme
+            final byte[] keyData;
+            final int keysize;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                keyData = Base64.getDecoder().decode(encodedKey);
+                keysize = keyData.length * Byte.SIZE;
+            }else {
+                keyData = android.util.Base64.decode(encodedKey, android.util.Base64.DEFAULT);
+                keysize = keyData.length * Byte.SIZE;
+            }
+
+
+            // this should be checked by a SecretKeyFactory, but that doesn't exist for AES
+//            switch (keysize) {
+//                case 128:
+//                case 192:
+//                case 256:
+//                case 512:
+//                    break;
+//                default:
+//                    throw new IllegalArgumentException("Invalid key size for AES: " + keysize);
+//            }
+
+            if (Cipher.getMaxAllowedKeyLength(Constants.ALGORITHM) < keysize) {
+                // this may be an issue if unlimited crypto is not installed
+                throw new IllegalArgumentException("Key size of " + keysize
+                        + " not supported in this runtime");
+            }
+
+            // throws IllegalArgumentException - if key is empty
+            final SecretKeySpec aesKey = new SecretKeySpec(keyData, Constants.ALGORITHM);
+            return aesKey;
+        } catch (final NoSuchAlgorithmException e) {
+            // AES functionality is a requirement for any Java SE runtime
+            throw new IllegalStateException(
+                    "AES should always be present in a Java SE runtime", e);
+        }
+    }
+
+    public static String encodeAESKeyToBase64(final SecretKey aesKey)
+            throws IllegalArgumentException {
+        if (!aesKey.getAlgorithm().equalsIgnoreCase(Constants.ALGORITHM)) {
+            throw new IllegalArgumentException("Not an AES key");
+        }
+
+        final byte[] keyData = aesKey.getEncoded();
+        final String encodedKey;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            encodedKey = Base64.getEncoder().encodeToString(keyData);
+        }else {
+            encodedKey = android.util.Base64.encodeToString(keyData, android.util.Base64.DEFAULT);
+        }
+        return encodedKey;
+    }
 }

@@ -1,7 +1,5 @@
 package com.example.alarmpig.util;
 
-import android.os.Bundle;
-
 import java.util.Calendar;
 
 public final class Constants {
@@ -14,6 +12,7 @@ public final class Constants {
     public static final String SERVICE = "alarm_service";
     public static final String RECEIVER = "alarm_receiver";
     public static final String FILE = "alarm_file";
+    public static final String KEY = "alarm_key";
     public static final int TIME_DEFAULT = 7;
 
     public static final int MON = Calendar.MONDAY;
@@ -44,4 +43,12 @@ public final class Constants {
     public static final String KEY_ALARM_ID = "key_alarm_id";
     public static final int ADD_REQUEST_CODE = 103;
     public static final int ADD_TYPE = 3;
+
+    public static final int TYPE_ALARM = 1;
+    public static final int TYPE_NOTIFICATION = 2;
+
+    public static final String ALARM_FIREBASE_REF = "alarm";
+    public static final String SECRET_KEY = "secret_key";
+//    public static final String ALGORITHM = "AES";
+    public static final String ALGORITHM = "HmacSHA1";
 }

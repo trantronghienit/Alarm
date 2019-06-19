@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -24,6 +27,9 @@ public class AddAlarmActivity extends BaseActivity {
     private TimePicker mTimePicker;
     private EditText mLabel;
     private CheckBox mMon, mTues, mWed, mThurs, mFri, mSat, mSun;
+    private CheckBox mCbNotification;
+    private LinearLayout mLayoutMessage;
+    private EditText mEditAlarmMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +49,18 @@ public class AddAlarmActivity extends BaseActivity {
         mFri = findViewById(R.id.edit_alarm_fri);
         mSat = findViewById(R.id.edit_alarm_sat);
         mSun = findViewById(R.id.edit_alarm_sun);
+
+        mCbNotification = findViewById(R.id.cb_notification_type);
+        mLayoutMessage = findViewById(R.id.layout_message);
+        mLayoutMessage.setVisibility(mCbNotification.isChecked() ? View.VISIBLE : View.GONE);
+        mEditAlarmMessage = findViewById(R.id.edit_alarm_message);
+
+        mCbNotification.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mLayoutMessage.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     @Override
@@ -66,7 +84,7 @@ public class AddAlarmActivity extends BaseActivity {
     private void addAlarm() {
         try {
             String label = TextUtils.isEmpty(mLabel.getText().toString()) ? "label_" + System.currentTimeMillis() : mLabel.getText().toString();
-            String message = mLabel.getText().toString();
+            String message = mEditAlarmMessage.getText().toString();
             AlarmModel alarm = new AlarmModel();
 
             final Calendar time = Calendar.getInstance();
@@ -79,6 +97,7 @@ public class AddAlarmActivity extends BaseActivity {
             alarm.label = label;
             alarm.message = message;
             alarm.active = true;
+            alarm.type = mCbNotification.isChecked() ? Constants.TYPE_NOTIFICATION : Constants.TYPE_ALARM;
             alarm.setDay(Constants.MON, mMon.isChecked());
             alarm.setDay(Constants.TUES, mTues.isChecked());
             alarm.setDay(Constants.WED, mWed.isChecked());

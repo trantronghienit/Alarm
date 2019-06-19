@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:scrollbarStyle="outsideOverlay">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:orientation="vertical"
         android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin">
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             android:layout_marginBottom="@dimen/list_padding_vertical_small"
             android:text="@string/time"
-            tools:text="Time"/>
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            tools:text="Time" />
 
         <View
             android:layout_width="match_parent"
@@ -42,10 +41,10 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             android:layout_marginBottom="@dimen/list_padding_vertical_small"
             android:text="@string/label"
-            tools:text="Label"/>
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            tools:text="Label" />
 
         <View
             android:layout_width="match_parent"
@@ -57,20 +56,59 @@
             android:id="@+id/edit_alarm_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:hint="@string/add_label_hint"
             android:inputType="textCapWords"
             android:maxLength="15"
             android:textColor="@color/secondary_text"
-            android:textStyle="italic"
-            android:hint="@string/add_label_hint"
-            android:layout_marginBottom="@dimen/activity_vertical_margin" />
+            android:textStyle="italic" />
+
+
+        <CheckBox
+            android:id="@+id/cb_notification_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/notification_type" />
+
+        <LinearLayout
+            android:id="@+id/layout_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/list_padding_vertical_small"
+                android:text="@string/message"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="@dimen/list_padding_vertical_small"
+                android:background="@drawable/divider" />
+
+            <EditText
+                android:id="@+id/edit_alarm_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:hint="@string/add_message_hint"
+                android:inputType="textCapWords"
+                android:maxLength="15"
+                android:textColor="@color/secondary_text"
+                android:textStyle="italic" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             android:layout_marginBottom="@dimen/list_padding_vertical_small"
             android:text="@string/days"
-            tools:text="Days"/>
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            tools:text="Days" />
 
         <View
             android:layout_width="match_parent"
@@ -86,114 +124,107 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_gravity="center_vertical|fill_horizontal"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
                 android:text="@string/monday"
-                tools:text="Monday"
-                />
+                app:layout_gravity="center_vertical|fill_horizontal"
+                tools:text="Monday" />
 
             <CheckBox
                 android:id="@+id/edit_alarm_mon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
-                app:layout_gravity="center_vertical"/>
+                app:layout_gravity="center_vertical" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_gravity="center_vertical|fill_horizontal"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
                 android:text="@string/tuesday"
-                tools:text="Tuesday"
-                />
+                app:layout_gravity="center_vertical|fill_horizontal"
+                tools:text="Tuesday" />
 
             <CheckBox
                 android:id="@+id/edit_alarm_tues"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
-                app:layout_gravity="center_vertical"/>
+                app:layout_gravity="center_vertical" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_gravity="center_vertical|fill_horizontal"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
                 android:text="@string/wednesday"
-                tools:text="Wednesday"
-                />
+                app:layout_gravity="center_vertical|fill_horizontal"
+                tools:text="Wednesday" />
 
             <CheckBox
                 android:id="@+id/edit_alarm_wed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
-                app:layout_gravity="center_vertical"/>
+                app:layout_gravity="center_vertical" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_gravity="center_vertical|fill_horizontal"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
                 android:text="@string/thursday"
-                tools:text="Thursday"
-                />
+                app:layout_gravity="center_vertical|fill_horizontal"
+                tools:text="Thursday" />
 
             <CheckBox
                 android:id="@+id/edit_alarm_thurs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
-                app:layout_gravity="center_vertical"/>
+                app:layout_gravity="center_vertical" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_gravity="center_vertical|fill_horizontal"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
                 android:text="@string/friday"
-                tools:text="Friday"
-                />
+                app:layout_gravity="center_vertical|fill_horizontal"
+                tools:text="Friday" />
 
             <CheckBox
                 android:id="@+id/edit_alarm_fri"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
-                app:layout_gravity="center_vertical"/>
+                app:layout_gravity="center_vertical" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_gravity="center_vertical|fill_horizontal"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
                 android:text="@string/saturday"
-                tools:text="Saturday"
-                />
+                app:layout_gravity="center_vertical|fill_horizontal"
+                tools:text="Saturday" />
 
             <CheckBox
                 android:id="@+id/edit_alarm_sat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
-                app:layout_gravity="center_vertical"/>
+                app:layout_gravity="center_vertical" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_gravity="center_vertical|fill_horizontal"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
                 android:text="@string/sunday"
-                tools:text="Sunday"
-                />
+                app:layout_gravity="center_vertical|fill_horizontal"
+                tools:text="Sunday" />
 
             <CheckBox
                 android:id="@+id/edit_alarm_sun"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/list_padding_vertical_small"
-                app:layout_gravity="center_vertical"/>
+                app:layout_gravity="center_vertical" />
         </androidx.gridlayout.widget.GridLayout>
 
     </LinearLayout>

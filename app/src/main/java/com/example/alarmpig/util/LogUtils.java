@@ -28,4 +28,9 @@ public final class LogUtils {
     public static void e(String message){
         Log.i(Constants.ERROR , message);
     }
+
+    public static void k(String message){
+        Log.i(Constants.KEY , message);
+    }
+
 }

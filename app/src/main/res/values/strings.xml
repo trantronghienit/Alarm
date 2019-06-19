@@ -40,5 +40,8 @@
     <!-- Notification -->
     <string name="channel_name">Simple Alarms</string>
     <string name="notification_title">Thông báo</string>
+    <string name="message">Lời nhắn</string>
+    <string name="add_message_hint">thêm lời nhắc</string>
+    <string name="notification_type">Kiểu thông báo</string>
 
 </resources>

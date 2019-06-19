@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <EditText
         android:id="@+id/edtInputCode"
@@ -16,6 +15,7 @@
         android:layout_marginRight="8dp"
         android:ems="10"
         android:hint="Nhập code"
+        android:inputType="number"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -29,6 +29,8 @@
         android:layout_marginTop="8dp"
         android:text="Unlock"
         android:textAllCaps="false"
-        app:layout_constraintTop_toBottomOf="@+id/edtInputCode"
-        tools:layout_editor_absoluteX="160dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edtInputCode" />
 </androidx.constraintlayout.widget.ConstraintLayout>
