@@ -19,9 +19,8 @@ public class AlarmController {
 
 
     public static void setAlarm(Context context, AlarmModel info) {
-        LogUtils.i("start alarm: " + info.alarmId);
+        LogUtils.i("start alarm id: " + info.alarmId + "\ttime: " + info.hour + ":" + info.minute);
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -47,7 +46,7 @@ public class AlarmController {
                 daysId.add(keyList.get(i));
             }
         }
-
+        intent.putExtra(Constants.DAY, daysId);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(context, info.alarmId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
