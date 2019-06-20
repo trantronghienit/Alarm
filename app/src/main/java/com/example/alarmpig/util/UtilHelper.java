@@ -120,14 +120,16 @@ public final class UtilHelper {
         for (int i = 0; i < values.length; i++) {
             myRef.setValue(values[i]);
         }
-        myRef.push();
     }
 
     public static void saveInfoAppInFirebase(FirebaseInfoDevice infoDevice,DatabaseReference.CompletionListener completionListener ){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference(Constants.ALARM_FIREBASE_REF);
         myRef.setValue(infoDevice, completionListener);
-        myRef.push();
+    }
+
+    public static String removeSpecial(String input){
+        return input.replaceAll("[^A-Za-z0-9]" , "");
     }
 
 

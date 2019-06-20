@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,8 +34,15 @@ import com.example.alarmpig.util.Constants;
 import com.example.alarmpig.util.LogUtils;
 import com.example.alarmpig.util.SharedPrefs;
 import com.example.alarmpig.util.UtilHelper;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.io.File;
 import java.security.InvalidKeyException;
@@ -68,13 +76,13 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
         btnUnlock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isValidCode()){
+                if (isValidCode()) {
                     UtilHelper.switchActivity(SplashActivity.this, MainActivity.class);
-                }else {
+                } else {
                     generateTOTPCode();
                     Toast.makeText(SplashActivity.this, "code not valid", Toast.LENGTH_SHORT).show();
                 }
-                
+
             }
         });
 
@@ -118,53 +126,91 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
 
     // https://totp.danhersam.com/
     private void generateTOTPCode() {
-        TimeBasedOneTimePasswordGenerator totp = null;
-        String secretKeyStringSharedPrefs = SharedPrefs.getInstance().get(Constants.SECRET_KEY, String.class);
-        try {
-            totp = new TimeBasedOneTimePasswordGenerator(60L, TimeUnit.SECONDS , 6 , Constants.ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        SecretKey key = null;
-        if (TextUtils.isEmpty(secretKeyStringSharedPrefs)) {
-            // get base64 encoded version of the key
-            if (key != null) {
-                final KeyGenerator keyGenerator;
-                try {
-//                keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
-                    keyGenerator = KeyGenerator.getInstance(Constants.ALGORITHM);
-                    keyGenerator.init(512);
+//        TimeBasedOneTimePasswordGenerator totp = null;
+//        String secretKeyStringSharedPrefs = SharedPrefs.getInstance().get(Constants.SECRET_KEY, String.class);
+//        try {
+//            totp = new TimeBasedOneTimePasswordGenerator(60L, TimeUnit.SECONDS, 6, Constants.ALGORITHM);
+//        } catch (NoSuchAlgorithmException e) {
+//            e.printStackTrace();
+//        }
+//        SecretKey key = null;
+//        if (TextUtils.isEmpty(secretKeyStringSharedPrefs)) {
+//            // get base64 encoded version of the key
+//            final KeyGenerator keyGenerator;
+//            try {
+////                keyGenerator = KeyGenerator.getInstance(totp.getAlgorithm());
+//                keyGenerator = KeyGenerator.getInstance(Constants.ALGORITHM);
+//                keyGenerator.init(512);
+//
+//                key = keyGenerator.generateKey();
+//
+//            } catch (NoSuchAlgorithmException e) {
+//                e.printStackTrace();
+//            }
+//            // todo:  thay đổi thuật toán mã hóa
+//            final String stringKey = UtilHelper.removeSpecial(UtilHelper.encodeAESKeyToBase64(key));
+//            // push key to firebase success then save key local
+//            FirebaseInfoDevice infoDevice = new FirebaseInfoDevice();
+//            infoDevice.deviceName = android.os.Build.MODEL;
+//            infoDevice.keyTOTP = stringKey;
+//            UtilHelper.saveInfoAppInFirebase(infoDevice, new DatabaseReference.CompletionListener() {
+//                @Override
+//                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+//                    SharedPrefs.getInstance().put(Constants.SECRET_KEY, stringKey);
+//                    if (databaseError != null) {
+//                        LogUtils.e("save firebase error " + databaseError.getMessage());
+//                    } else {
+//                        LogUtils.k("save akey local " + stringKey);
+//                    }
+//
+//                }
+//            });
+//            LogUtils.k("push to firebase key " + stringKey);
+//
+//        }
+//        final Date now = new Date();
+//        LogUtils.k("save secretKeyString local " + secretKeyStringSharedPrefs);
+//        try {
+//            key = UtilHelper.decodeBase64ToAESKey(secretKeyStringSharedPrefs);
+//            mTOTPCode = String.valueOf(totp.generateOneTimePassword(key, now));
+//        } catch (InvalidKeyException | NullPointerException e) {
+//            e.printStackTrace();
+//        }
+//        LogUtils.k("save mTOTPCode " + mTOTPCode);
+        mTOTPCode = "008901";
+        FirebaseInfoDevice infoDevice = new FirebaseInfoDevice();
+            infoDevice.deviceName = android.os.Build.MODEL;
+            infoDevice.keyTOTP = "";
+            infoDevice.totp = mTOTPCode;
+            UtilHelper.saveInfoAppInFirebase(infoDevice, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    SharedPrefs.getInstance().put(Constants.TOTP_CODE_KEY, mTOTPCode);
+                    if (databaseError != null) {
+                        LogUtils.e("save mTOTPCode error " + databaseError.getMessage());
+                    } else {
+                        LogUtils.k("save mTOTPCode local " + mTOTPCode);
+                    }
 
-                    key = keyGenerator.generateKey();
-
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
                 }
-                // todo:  loại bỏ ký tự đặc biệt và khoảng trắng
-                final String stringKey = UtilHelper.encodeAESKeyToBase64(key);
-                // push key to firebase success then save key local
-                FirebaseInfoDevice infoDevice = new FirebaseInfoDevice();
-                infoDevice.deviceName = "";
-                infoDevice.keyTOTP = stringKey;
-                UtilHelper.saveInfoAppInFirebase(infoDevice, new DatabaseReference.CompletionListener() {
+            });
+            LogUtils.k("push to mTOTPCode key " + mTOTPCode);
+
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                        SharedPrefs.getInstance().put(Constants.SECRET_KEY, stringKey);
-                        LogUtils.k("save akey local " + stringKey);
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            LogUtils.k("getInstanceId failed " + task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+                        String token = task.getResult().getToken();
+                        LogUtils.k("token: " + token);
                     }
                 });
-                LogUtils.k("push to firebase key " + stringKey);
-            }
-        }
-        final Date now = new Date();
-        LogUtils.k("save secretKeyString local " + secretKeyStringSharedPrefs);
-        try {
-            key = UtilHelper.decodeBase64ToAESKey(secretKeyStringSharedPrefs);
-            mTOTPCode = String.valueOf(totp.generateOneTimePassword(key, now));
-        } catch (InvalidKeyException | NullPointerException e) {
-            e.printStackTrace();
-        }
-        LogUtils.k("save mTOTPCode " + mTOTPCode);
+
     }
 
     private void updateApp(String link) {
@@ -198,7 +244,6 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
         String input = edtInputCode.getText().toString();
         LogUtils.k("check code TOTPCode " + mTOTPCode);
         return input.trim().equalsIgnoreCase(mTOTPCode.trim());
-
     }
 
     @Override
