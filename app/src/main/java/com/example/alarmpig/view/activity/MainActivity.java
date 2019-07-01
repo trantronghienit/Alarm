@@ -10,6 +10,7 @@ import com.example.alarmpig.model.AlarmModel;
 import com.example.alarmpig.service.AlarmService;
 import com.example.alarmpig.util.AlarmController;
 import com.example.alarmpig.util.LogUtils;
+import com.example.alarmpig.util.UtilHelper;
 
 import java.util.List;
 
@@ -31,8 +32,7 @@ public class MainActivity extends BaseActivity {
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentToService = new Intent(MainActivity.this, AlarmService.class);
-                stopService(intentToService);
+                UtilHelper.stopSevicesAlarm(MainActivity.this);
                 stopAlarm();
                 startAlarm();
             }
@@ -41,8 +41,7 @@ public class MainActivity extends BaseActivity {
         btnStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentToService = new Intent(MainActivity.this, AlarmService.class);
-                stopService(intentToService);
+                UtilHelper.stopSevicesAlarm(MainActivity.this);
                 stopAlarm();
             }
         });

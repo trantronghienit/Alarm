@@ -2,9 +2,11 @@ package com.example.alarmpig.util;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
@@ -13,6 +15,8 @@ import androidx.annotation.StringRes;
 
 import com.example.alarmpig.App;
 import com.example.alarmpig.model.FirebaseInfoDevice;
+import com.example.alarmpig.service.AlarmService;
+import com.example.alarmpig.view.activity.MainActivity;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -154,6 +158,10 @@ public final class UtilHelper {
         }
     }
 
+    public static String generateStringAESKey(int keysize){
+        return encodeAESKeyToBase64(generateAESKey(keysize));
+    }
+
     public static SecretKey decodeBase64ToAESKey(final String encodedKey)
             throws IllegalArgumentException {
         try {
@@ -211,5 +219,10 @@ public final class UtilHelper {
             encodedKey = android.util.Base64.encodeToString(keyData, android.util.Base64.DEFAULT);
         }
         return encodedKey;
+    }
+
+    public static void stopSevicesAlarm(Context context) {
+        Intent intentToService = new Intent(context, AlarmService.class);
+        context.stopService(intentToService);
     }
 }

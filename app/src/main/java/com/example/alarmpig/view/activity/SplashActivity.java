@@ -2,14 +2,15 @@ package com.example.alarmpig.view.activity;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,8 +18,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.example.alarmpig.BuildConfig;
@@ -34,15 +35,22 @@ import com.example.alarmpig.util.Constants;
 import com.example.alarmpig.util.LogUtils;
 import com.example.alarmpig.util.SharedPrefs;
 import com.example.alarmpig.util.UtilHelper;
+import com.example.totp_client.TotpToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.MultiplePermissionsReport;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
+import com.karumi.dexter.listener.single.PermissionListener;
 
 import java.io.File;
 import java.security.InvalidKeyException;
@@ -69,8 +77,9 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
+        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
         inIt();
-        askForPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, 101);
+//        askForPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, 101);
         loadConfig();
 
         btnUnlock.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +94,46 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
 
             }
         });
+
+        Dexter.withActivity(this)
+                .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        if (!report.areAllPermissionsGranted()) {
+                            List<PermissionDeniedResponse> denieds = report.getDeniedPermissionResponses();
+                            for (PermissionDeniedResponse permission : denieds) {
+                                if (permission.isPermanentlyDenied()) {
+                                    Dexter.withActivity(SplashActivity.this)
+                                            .withPermission(permission.getPermissionName())
+                                            .withListener(new PermissionListener() {
+                                                @Override
+                                                public void onPermissionGranted(PermissionGrantedResponse response) {
+
+                                                }
+
+                                                @Override
+                                                public void onPermissionDenied(PermissionDeniedResponse response) {
+
+                                                }
+
+                                                @Override
+                                                public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+                                                }
+                                            })
+                                            .check();
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+
+                    }
+                })
+                .check();
 
     }
 
@@ -126,6 +175,7 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
 
     // https://totp.danhersam.com/
     private void generateTOTPCode() {
+
 //        TimeBasedOneTimePasswordGenerator totp = null;
 //        String secretKeyStringSharedPrefs = SharedPrefs.getInstance().get(Constants.SECRET_KEY, String.class);
 //        try {
@@ -176,25 +226,27 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
 //        } catch (InvalidKeyException | NullPointerException e) {
 //            e.printStackTrace();
 //        }
-//        LogUtils.k("save mTOTPCode " + mTOTPCode);
-        mTOTPCode = "008901";
-        FirebaseInfoDevice infoDevice = new FirebaseInfoDevice();
-            infoDevice.deviceName = android.os.Build.MODEL;
-            infoDevice.keyTOTP = "";
-            infoDevice.totp = mTOTPCode;
-            UtilHelper.saveInfoAppInFirebase(infoDevice, new DatabaseReference.CompletionListener() {
-                @Override
-                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                    SharedPrefs.getInstance().put(Constants.TOTP_CODE_KEY, mTOTPCode);
-                    if (databaseError != null) {
-                        LogUtils.e("save mTOTPCode error " + databaseError.getMessage());
-                    } else {
-                        LogUtils.k("save mTOTPCode local " + mTOTPCode);
-                    }
 
+        String key = UtilHelper.generateStringAESKey(256);
+        TotpToken totpToken = new TotpToken("8927589235723952830581209535534",30 , 6);
+        LogUtils.k("key sectec: " + key);
+        FirebaseInfoDevice infoDevice = new FirebaseInfoDevice();
+        infoDevice.deviceName = android.os.Build.MODEL;
+        infoDevice.keyTOTP =  totpToken.generateOtp();
+        infoDevice.totp = mTOTPCode;
+        UtilHelper.saveInfoAppInFirebase(infoDevice, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                SharedPrefs.getInstance().put(Constants.TOTP_CODE_KEY, mTOTPCode);
+                if (databaseError != null) {
+                    LogUtils.e("save mTOTPCode error " + databaseError.getMessage());
+                } else {
+                    LogUtils.k("save mTOTPCode local " + mTOTPCode);
                 }
-            });
-            LogUtils.k("push to mTOTPCode key " + mTOTPCode);
+
+            }
+        });
+        LogUtils.k("push to mTOTPCode key " + mTOTPCode);
 
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
@@ -243,7 +295,7 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
         }
         String input = edtInputCode.getText().toString();
         LogUtils.k("check code TOTPCode " + mTOTPCode);
-        return input.trim().equalsIgnoreCase(mTOTPCode.trim());
+        return input.equalsIgnoreCase(mTOTPCode);
     }
 
     @Override
@@ -293,21 +345,6 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    private void askForPermission(String permission, Integer requestCode) {
-        if (ContextCompat.checkSelfPermission(SplashActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
-
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(SplashActivity.this, permission)) {
-                ActivityCompat.requestPermissions(SplashActivity.this, new String[]{permission}, requestCode);
-
-            } else {
-                ActivityCompat.requestPermissions(SplashActivity.this, new String[]{permission}, requestCode);
-            }
-        } else if (ContextCompat.checkSelfPermission(SplashActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
-            Toast.makeText(getApplicationContext(), "Permission was denied", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -317,6 +354,35 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
                 Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Go to settings")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            gotoSetting();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+            Dexter.withActivity(SplashActivity.this)
+                    .withPermission(permissions[0])
+                    .withListener(new PermissionListener() {
+                        @Override
+                        public void onPermissionGranted(PermissionGrantedResponse response) { }
+                        @Override
+                        public void onPermissionDenied(PermissionDeniedResponse response) { }
+                        @Override
+                        public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) { }
+                    })
+                    .check();
         }
+    }
+
+    private void gotoSetting(){
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivity(intent);
     }
 }

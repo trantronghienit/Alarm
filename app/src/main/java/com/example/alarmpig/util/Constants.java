@@ -50,6 +50,6 @@ public final class Constants {
     public static final String ALARM_FIREBASE_REF = "alarm";
     public static final String SECRET_KEY = "secret_key";
     public static final String TOTP_CODE_KEY = "totp_code_key";
-//    public static final String ALGORITHM = "AES";
-    public static final String ALGORITHM = "HmacSHA1";
+    public static final String ALGORITHM = "AES";
+//    public static final String ALGORITHM = "HmacSHA1";
 }
