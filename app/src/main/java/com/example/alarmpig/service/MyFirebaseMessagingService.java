@@ -24,7 +24,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // Handle message within 10 seconds
 //                handleNow();
             }
-
         }
 
         // Check if message contains a notification payload.
