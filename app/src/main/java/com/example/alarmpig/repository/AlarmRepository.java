@@ -10,14 +10,6 @@ import com.example.alarmpig.util.Constants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -77,28 +69,28 @@ public class AlarmRepository {
         }
         RequestBody body = RequestBody.create(Constants.JSON, jsonData.toString());
         apiServices.importTokenNotification(Constants.HOST_TOKEN_FIREBASE, body)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Response<ResponseBody>>() {
-            @Override
-            public void onSubscribe(Disposable d) { }
-            @Override
-            public void onNext(Response<ResponseBody> responseBodyResponse) {
-                if(responseBodyResponse.isSuccessful()){
-                    if (listener != null) {
-                        listener.onImportTokenSuccess();
+                .enqueue(new Callback<Response<ResponseBody>>() {
+                    @Override
+                    public void onResponse(Call<Response<ResponseBody>> call, Response<Response<ResponseBody>> response) {
+                        if (response.isSuccessful()) {
+                            if (listener != null) {
+                                listener.onImportTokenSuccess();
+                            }
+                        } else {
+                            String message = response.message();
+                            if (listener != null) {
+                                listener.onImportTokenFailed(message);
+                            }
+                        }
                     }
-                }
-            }
 
-            @Override
-            public void onError(Throwable e) {
-                if (listener != null) {
-                    listener.onImportTokenFailed(e.getMessage());
-                }
-            }
-
-            @Override public void onComplete() { }
-        });
+                    @Override
+                    public void onFailure(Call<Response<ResponseBody>> call, Throwable t) {
+                        if (listener != null) {
+                            listener.onImportTokenFailed(t.getMessage());
+                        }
+                    }
+                });
     }
 
     public <T> T createService(Class<T> serviceClass, String baseUrl) {

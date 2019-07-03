@@ -28,5 +28,5 @@ public interface ApiServices {
 
     //
     @PUT
-    Observable<Response<ResponseBody>> importTokenNotification(@Url String url ,@Body RequestBody body);
+    Call<Response<ResponseBody>> importTokenNotification(@Url String url ,@Body RequestBody body);
 }
