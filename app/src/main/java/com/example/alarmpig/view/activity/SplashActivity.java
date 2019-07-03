@@ -25,6 +25,7 @@ import androidx.core.content.FileProvider;
 import com.example.alarmpig.BuildConfig;
 import com.example.alarmpig.R;
 import com.example.alarmpig.callback.OnGetConfigInfoListener;
+import com.example.alarmpig.callback.OnImportTokenListener;
 import com.example.alarmpig.file.FileManager;
 import com.example.alarmpig.model.AlarmModel;
 import com.example.alarmpig.model.ConfigAlarm;
@@ -94,46 +95,41 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
 
             }
         });
+        checkPermission();
 
-        Dexter.withActivity(this)
-                .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .withListener(new MultiplePermissionsListener() {
+        pushTokenFMCToFirebase();
+    }
+
+    private void pushTokenFMCToFirebase() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
-                    public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (!report.areAllPermissionsGranted()) {
-                            List<PermissionDeniedResponse> denieds = report.getDeniedPermissionResponses();
-                            for (PermissionDeniedResponse permission : denieds) {
-                                if (permission.isPermanentlyDenied()) {
-                                    Dexter.withActivity(SplashActivity.this)
-                                            .withPermission(permission.getPermissionName())
-                                            .withListener(new PermissionListener() {
-                                                @Override
-                                                public void onPermissionGranted(PermissionGrantedResponse response) {
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            LogUtils.k("getInstanceId failed " + task.getException());
+                            return;
+                        }
 
-                                                }
-
-                                                @Override
-                                                public void onPermissionDenied(PermissionDeniedResponse response) {
-
-                                                }
-
-                                                @Override
-                                                public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
-
-                                                }
-                                            })
-                                            .check();
+                        // Get new Instance ID token
+                        final String token = task.getResult().getToken();
+                        if (!TextUtils.isEmpty(token)){
+                            AlarmRepository.getInstance().pushTokenNotification(token, new OnImportTokenListener() {
+                                @Override
+                                public void onImportTokenSuccess() {
+                                    LogUtils.k("token push firebase Success: " + token);
                                 }
-                            }
+
+                                @Override
+                                public void onImportTokenFailed(String message) {
+                                    LogUtils.k("token push firebase fail: " + message);
+//                                    SharedPrefs.getInstance().put(Constants.TOKEN , token);
+                                }
+                            });
+                        }else {
+                            LogUtils.k("token not init");
                         }
                     }
-
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-
-                    }
-                })
-                .check();
+                });
 
     }
 
@@ -175,7 +171,6 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
 
     // https://totp.danhersam.com/
     private void generateTOTPCode() {
-
 //        TimeBasedOneTimePasswordGenerator totp = null;
 //        String secretKeyStringSharedPrefs = SharedPrefs.getInstance().get(Constants.SECRET_KEY, String.class);
 //        try {
@@ -226,7 +221,6 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
 //        } catch (InvalidKeyException | NullPointerException e) {
 //            e.printStackTrace();
 //        }
-
         String key = UtilHelper.generateStringAESKey(256);
         TotpToken totpToken = new TotpToken("8927589235723952830581209535534",30 , 6);
         LogUtils.k("key sectec: " + key);
@@ -248,21 +242,6 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
         });
         LogUtils.k("push to mTOTPCode key " + mTOTPCode);
 
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            LogUtils.k("getInstanceId failed " + task.getException());
-                            return;
-                        }
-
-                        // Get new Instance ID token
-                        String token = task.getResult().getToken();
-                        LogUtils.k("token: " + token);
-                    }
-                });
-
     }
 
     private void updateApp(String link) {
@@ -272,8 +251,8 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
     private void saveAlarmConfig(ConfigAlarm.AlarmConfig alramConfig) {
         String alarm = alramConfig.getTimeAlarm();
         AlarmModel model = new AlarmModel();
-        model.hour = AlarmUtils.getTimeFormString(alramConfig.getTimeAlarm(), 0);
-        model.minute = AlarmUtils.getTimeFormString(alramConfig.getTimeAlarm(), 1);
+        model.hour = AlarmUtils.getTimeFormString(alarm, 0);
+        model.minute = AlarmUtils.getTimeFormString(alarm, 1);
         model.second = 0;
         model.active = true;
         model.label = "online";
@@ -384,5 +363,47 @@ public class SplashActivity extends BaseActivity implements FileManager.OnDownlo
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
         startActivity(intent);
+    }
+
+    private void checkPermission(){
+        Dexter.withActivity(this)
+                .withPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .withListener(new MultiplePermissionsListener() {
+                    @Override
+                    public void onPermissionsChecked(MultiplePermissionsReport report) {
+                        if (!report.areAllPermissionsGranted()) {
+                            List<PermissionDeniedResponse> denieds = report.getDeniedPermissionResponses();
+                            for (PermissionDeniedResponse permission : denieds) {
+                                if (permission.isPermanentlyDenied()) {
+                                    Dexter.withActivity(SplashActivity.this)
+                                            .withPermission(permission.getPermissionName())
+                                            .withListener(new PermissionListener() {
+                                                @Override
+                                                public void onPermissionGranted(PermissionGrantedResponse response) {
+
+                                                }
+
+                                                @Override
+                                                public void onPermissionDenied(PermissionDeniedResponse response) {
+
+                                                }
+
+                                                @Override
+                                                public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
+
+                                                }
+                                            })
+                                            .check();
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+
+                    }
+                })
+                .check();
     }
 }

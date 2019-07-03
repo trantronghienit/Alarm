@@ -2,6 +2,8 @@ package com.example.alarmpig.util;
 
 import java.util.Calendar;
 
+import okhttp3.MediaType;
+
 public final class Constants {
     public static final String ACTION_VOLUME_CHANGE = "android.media.VOLUME_CHANGED_ACTION";
     public static final String DATABASE_NAME = "alarm_db";
@@ -52,5 +54,8 @@ public final class Constants {
     public static final String TOTP_CODE_KEY = "totp_code_key";
     public static final String ALGORITHM = "AES";
     public static final String DIR_APP = "alarm_pig";
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final String HOST_TOKEN_FIREBASE = "https://alarmpig-db749.firebaseio.com/token.json";
+    public static final String TOKEN = "token";
 //    public static final String ALGORITHM = "HmacSHA1";
 }

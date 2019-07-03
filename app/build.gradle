@@ -45,4 +45,5 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.9'
     implementation 'com.karumi:dexter:5.0.0'
     implementation files('libs/generate-otp.jar')
+    compile project(path: ':totp_client')
 }

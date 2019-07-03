@@ -11,6 +11,8 @@ import com.example.alarmpig.App;
 import com.example.alarmpig.rest.ApiServices;
 import com.example.alarmpig.util.Constants;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.reactivestreams.Subscriber;
 
 import java.io.File;
@@ -25,10 +27,12 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Function4;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
@@ -79,6 +83,8 @@ public class FileManager {
             }
         });
     }
+
+
 
     public Observable<Object> downResImageBackground() {
         ApiServices downloadService = createService(ApiServices.class, "https://github.com/");

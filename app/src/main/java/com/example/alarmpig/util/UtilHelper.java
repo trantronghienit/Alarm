@@ -91,22 +91,6 @@ public final class UtilHelper {
             if (notBack) context.finish();
         }
     }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    public static int getTimePickerMinute(TimePicker picker) {
-        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                ? picker.getMinute()
-                : picker.getCurrentMinute();
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    public static int getTimePickerHour(TimePicker picker) {
-        return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                ? picker.getHour()
-                : picker.getCurrentHour();
-    }
-
-
     public static Gson getGson() {
         if (gson == null) {
             gson = new Gson();
