@@ -217,7 +217,7 @@ public class FileManager {
     private String saveToDisk(ResponseBody body, String filename) {
         try {
 
-            File destinationFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), filename);
+            File destinationFile = new File(Environment.getExternalStorageState() + "", filename);
 
             InputStream inputStream = null;
             OutputStream outputStream = null;

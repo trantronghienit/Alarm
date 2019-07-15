@@ -51,9 +51,9 @@ public class AlarmService extends Service {
             public void onReceive(Context context, Intent intent) {
                 long currentTime = System.currentTimeMillis();
                 boolean isValidCycle = currentTime - lastTime < 1000; // 1 giay
-                if (isValidCycle && intent.getAction() != null && intent.getAction().equals(Constants.ACTION_VOLUME_CHANGE)){
+                if (Constants.ENABLE_MAX_VOLUME && isValidCycle && intent.getAction() != null && intent.getAction().equals(Constants.ACTION_VOLUME_CHANGE)){
                     LogUtils.i("AlarmService onReceive: change volume button");
-//                    AudioUtil.maxVolume(context);
+                    AudioUtil.maxVolume(context);
                 }
                 lastTime = currentTime;
             }

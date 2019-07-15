@@ -5,12 +5,18 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.core.app.NotificationCompat;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.example.alarmpig.R;
 import com.example.alarmpig.service.AlarmService;
+import com.example.alarmpig.service.AlarmWorker;
 import com.example.alarmpig.util.AlarmUtils;
 import com.example.alarmpig.util.Constants;
 import com.example.alarmpig.util.LogUtils;
@@ -19,6 +25,7 @@ import com.example.alarmpig.view.activity.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.UUID;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private static final int TIME_VIBRATE = 1000;
@@ -43,8 +50,28 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     private void startServiceAlarm(Context context) {
-        Intent intentToService = new Intent(context, AlarmService.class);
-        context.startService(intentToService);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiresCharging(true)
+                    .setRequiresDeviceIdle(true)
+                    .build();
+//            Data data = new Data.Builder()
+//                    .putString(EXTRA_OUTPUT_MESSAGE, "I have come from MyWorker!")
+//                    .build();
+
+            OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(AlarmWorker.class)
+//                    .setInputData(data)
+                    .addTag(Constants.TAG_ALARM_WORKER)
+                    .setConstraints(constraints)
+                    .build();
+//            UUID idWorker = request.getId();
+            WorkManager.getInstance().enqueue(request);
+
+        }else {
+            Intent intentToService = new Intent(context, AlarmService.class);
+            context.startService(intentToService);
+        }
+
     }
 
     private void showNotification(Context context, Intent intent) {

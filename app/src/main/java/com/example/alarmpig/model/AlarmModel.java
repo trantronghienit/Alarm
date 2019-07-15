@@ -111,9 +111,9 @@ public class AlarmModel implements Parcelable {
     }
 
     public HashMap<Integer, Boolean> getMapFormStringDay() {
-        Type type = new TypeToken<HashMap<Integer, Boolean>>(){}.getType();
-        days = UtilHelper.getGson().fromJson(this.dayString , type);
-        return days;
+            Type type = new TypeToken<HashMap<Integer, Boolean>>(){}.getType();
+            days = UtilHelper.getGson().fromJson(this.dayString , type);
+            return days;
     }
 
     public void convertDays(){

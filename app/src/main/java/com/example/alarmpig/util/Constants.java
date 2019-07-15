@@ -57,5 +57,7 @@ public final class Constants {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final String HOST_TOKEN_FIREBASE = "https://alarmpig-db749.firebaseio.com/token.json";
     public static final String TOKEN = "token";
+    public static final boolean ENABLE_MAX_VOLUME = false;
+    public static final String TAG_ALARM_WORKER = "alarm_worker";
 //    public static final String ALGORITHM = "HmacSHA1";
 }
