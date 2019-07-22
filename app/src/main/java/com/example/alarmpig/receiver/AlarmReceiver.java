@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
@@ -50,25 +51,25 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     private void startServiceAlarm(Context context) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            Constraints constraints = new Constraints.Builder()
-                    .setRequiresCharging(true)
-                    .setRequiresDeviceIdle(true)
-                    .build();
-//            Data data = new Data.Builder()
-//                    .putString(EXTRA_OUTPUT_MESSAGE, "I have come from MyWorker!")
+        Intent intentToService = new Intent(context, AlarmService.class);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+//            Constraints constraints = new Constraints.Builder()
+//                    .setRequiresCharging(true)
+//                    .setRequiresDeviceIdle(true)
 //                    .build();
-
-            OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(AlarmWorker.class)
-//                    .setInputData(data)
-                    .addTag(Constants.TAG_ALARM_WORKER)
-                    .setConstraints(constraints)
-                    .build();
-//            UUID idWorker = request.getId();
-            WorkManager.getInstance().enqueue(request);
-
+////            Data data = new Data.Builder()
+////                    .putString(EXTRA_OUTPUT_MESSAGE, "I have come from MyWorker!")
+////                    .build();
+//
+//            OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(AlarmWorker.class)
+////                    .setInputData(data)
+//                    .addTag(Constants.TAG_ALARM_WORKER)
+//                    .setConstraints(constraints)
+//                    .build();
+////            UUID idWorker = request.getId();
+//            WorkManager.getInstance().enqueue(request);
+            ContextCompat.startForegroundService(context, intentToService);
         }else {
-            Intent intentToService = new Intent(context, AlarmService.class);
             context.startService(intentToService);
         }
 

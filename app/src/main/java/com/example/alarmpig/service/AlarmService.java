@@ -1,5 +1,7 @@
 package com.example.alarmpig.service;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,9 +9,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 
+import androidx.core.app.NotificationCompat;
+
+import com.example.alarmpig.R;
 import com.example.alarmpig.util.AudioUtil;
 import com.example.alarmpig.util.Constants;
 import com.example.alarmpig.util.LogUtils;
+import com.example.alarmpig.view.activity.MainActivity;
+
+import static com.example.alarmpig.App.CHANNEL_ID;
 
 public class AlarmService extends Service {
 
@@ -18,6 +26,20 @@ public class AlarmService extends Service {
     @Override
     public int onStartCommand(final Intent intent, int flags,final int startId) {
         LogUtils.s("onStartCommand: AlarmService");
+        String input = "thông báo";
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0, notificationIntent, 0);
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Example Service")
+                .setContentText(input)
+                .setSmallIcon(R.drawable.ic_alarm_active)
+                .setContentIntent(pendingIntent)
+                .build();
+//
+        startForeground(1, notification);
+
         AudioUtil.play(this, true, new AudioUtil.OnMediaPlayListener() {
             @Override
             public void onPrepared() {
